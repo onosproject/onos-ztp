@@ -31,8 +31,8 @@ var fileDescriptor_a91573d9ad3811b0 = []byte{
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x28, 0xc8, 0x4e, 0xd7,
 	0xcf, 0xcb, 0x2f, 0x2a, 0xc9, 0x48, 0xca, 0x2f, 0xcd, 0x4b, 0xd1, 0x2f, 0x28, 0xca, 0x2f, 0xc9,
 	0xd7, 0x4f, 0x4c, 0xc9, 0xcd, 0xcc, 0xd3, 0x03, 0xb3, 0x85, 0x58, 0xc1, 0x94, 0x91, 0x20, 0x17,
-	0x7f, 0x54, 0x48, 0x80, 0x23, 0x48, 0x22, 0x38, 0xb5, 0xa8, 0x2c, 0x33, 0x39, 0x35, 0x89, 0x0d,
-	0x2c, 0x63, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xba, 0xf3, 0xe1, 0x41, 0x44, 0x00, 0x00, 0x00,
+	0x7f, 0x54, 0x49, 0x81, 0x23, 0x48, 0x22, 0x38, 0xb5, 0xa8, 0x2c, 0x33, 0x39, 0x35, 0x89, 0x0d,
+	0x2c, 0x63, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xa1, 0x44, 0xb6, 0x5e, 0x44, 0x00, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -43,35 +43,35 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// ZTPAdminServiceClient is the client API for ZTPAdminService service.
+// ZtpAdminServiceClient is the client API for ZtpAdminService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ZTPAdminServiceClient interface {
+type ZtpAdminServiceClient interface {
 }
 
-type zTPAdminServiceClient struct {
+type ztpAdminServiceClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewZTPAdminServiceClient(cc *grpc.ClientConn) ZTPAdminServiceClient {
-	return &zTPAdminServiceClient{cc}
+func NewZtpAdminServiceClient(cc *grpc.ClientConn) ZtpAdminServiceClient {
+	return &ztpAdminServiceClient{cc}
 }
 
-// ZTPAdminServiceServer is the server API for ZTPAdminService service.
-type ZTPAdminServiceServer interface {
+// ZtpAdminServiceServer is the server API for ZtpAdminService service.
+type ZtpAdminServiceServer interface {
 }
 
-// UnimplementedZTPAdminServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedZTPAdminServiceServer struct {
+// UnimplementedZtpAdminServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedZtpAdminServiceServer struct {
 }
 
-func RegisterZTPAdminServiceServer(s *grpc.Server, srv ZTPAdminServiceServer) {
-	s.RegisterService(&_ZTPAdminService_serviceDesc, srv)
+func RegisterZtpAdminServiceServer(s *grpc.Server, srv ZtpAdminServiceServer) {
+	s.RegisterService(&_ZtpAdminService_serviceDesc, srv)
 }
 
-var _ZTPAdminService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.ZTPAdminService",
-	HandlerType: (*ZTPAdminServiceServer)(nil),
+var _ZtpAdminService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.ZtpAdminService",
+	HandlerType: (*ZtpAdminServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams:     []grpc.StreamDesc{},
 	Metadata:    "pkg/northbound/proto/admin.proto",

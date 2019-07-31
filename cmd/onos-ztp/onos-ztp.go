@@ -65,16 +65,16 @@ func main() {
 			_ = f2.Value.Set(value)
 		}
 	})
-	log.Info("Starting onos-control")
+	log.Info("Starting onos-ztp")
 
 	mgr, err := manager.LoadManager()
 	if err != nil {
-		log.Fatal("Unable to load onos-control ", err)
+		log.Fatal("Unable to load onos-ztp ", err)
 	} else {
 		mgr.Run()
 		err = startServer(*caPath, *keyPath, *certPath)
 		if err != nil {
-			log.Fatal("Unable to start onos-control ", err)
+			log.Fatal("Unable to start onos-ztp ", err)
 		}
 	}
 }

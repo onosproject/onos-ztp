@@ -19,6 +19,6 @@ syntax = "proto3";
 // Package admin defines the administrative and diagnostic gRPC interfaces.
 package proto;
 
-// ZTPAdminService provides means for enhanced interactions with the zero-touch-provisioning subsystem.
-service ZTPAdminService {
+// ZtpAdminService provides means for enhanced interactions with the zero-touch-provisioning subsystem.
+service ZtpAdminService {
 }
