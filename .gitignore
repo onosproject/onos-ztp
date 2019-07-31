@@ -1,0 +1,7 @@
+cmd/onos-ztp/onos-ztp
+vendor
+build/_output
+*.DS_Store
+coverage.txt
+*.coverprofile
+.idea
