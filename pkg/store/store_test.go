@@ -48,11 +48,17 @@ func Test_Basics(t *testing.T) {
 	db := setupRepo(t, "/tmp/roledb/2")
 	role := proto.DeviceRoleConfig{
 		Role: "leaf",
-		Properties: &proto.DeviceProperties{
-			Props: nil,
+		Config: &proto.DeviceConfig{
+			SoftwareVersion: "2019.08.02.c0ffee",
+			Properties:      nil,
 		},
 		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
 	}
+	role.GetConfig().Properties = append(role.GetConfig().Properties, &proto.DeviceProperty{
+		Path:  "/foo/bar",
+		Type:  "string_val",
+		Value: "totally fubar",
+	})
 	err := db.WriteRole(&role, false)
 	assert.NilError(t, err)
 
@@ -65,6 +71,7 @@ func Test_Basics(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Assert(t, rr.Role == "leaf", "got wrong role")
 	assert.Assert(t, rr.Pipeline.Pipeline == "simple", "got wrong pipeline")
+	assert.Assert(t, len(rr.Config.Properties) == 1, "got wrong config")
 
 	dr, err := db.DeleteRole("leaf")
 	assert.NilError(t, err)
