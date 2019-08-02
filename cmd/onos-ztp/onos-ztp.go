@@ -33,7 +33,7 @@ import (
 	"github.com/onosproject/onos-ztp/pkg/manager"
 	"github.com/onosproject/onos-ztp/pkg/northbound"
 	"github.com/onosproject/onos-ztp/pkg/northbound/admin"
-	"github.com/onosproject/onos-ztp/pkg/northbound/service"
+	"github.com/onosproject/onos-ztp/pkg/northbound/roles"
 	log "k8s.io/klog"
 )
 
@@ -83,7 +83,7 @@ func main() {
 func startServer(caPath string, keyPath string, certPath string) error {
 	s := northbound.NewServer(northbound.NewServerConfig(caPath, keyPath, certPath))
 	s.AddService(admin.Service{})
-	s.AddService(service.Service{})
+	s.AddService(roles.Service{})
 
 	return s.Serve(func(started string) {
 		log.Info("Started NBI on ", started)
