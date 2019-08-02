@@ -21,13 +21,14 @@ package proto;
 // DeviceRoleConfig carries the template configuration associated with a device role
 message DeviceRoleConfig {
     string role = 1;
-    DeviceProperties properties = 2;
+    DeviceConfig config = 2;
     DevicePipeline pipeline = 3;
 }
 
-// DeviceProperties is a set of initial configuration properties to be applied to a device.
-message DeviceProperties {
-    repeated DeviceProperty props = 1;
+// DeviceConfig is a set of initial configuration properties to be applied to a device.
+message DeviceConfig {
+    string softwareVersion = 1;
+    repeated DeviceProperty properties = 2;
 }
 
 // DeviceProperty is a path/type/value tuple

@@ -16,24 +16,26 @@
 package manager
 
 import (
+	"github.com/onosproject/onos-ztp/pkg/store"
 	log "k8s.io/klog"
 )
 
 var mgr Manager
 
-// Manager single point of entry for the config system.
+// Manager single point of entry for the zero touch provisioning system.
 type Manager struct {
+	db store.RoleStore
 }
 
-// NewManager initializes the network control manager subsystem.
+// NewManager initializes the provisioning manager subsystem.
 func NewManager() (*Manager, error) {
 	log.Info("Creating Manager")
-	mgr = Manager{}
+	mgr = Manager{db: store.RoleStore{Dir: "db"}}
 
 	return &mgr, nil
 }
 
-// LoadManager creates a configuration subsystem manager primed with stores loaded from the specified files.
+// LoadManager creates a provisioning subsystem manager primed with stores loaded from the specified files.
 func LoadManager() (*Manager, error) {
 	return NewManager()
 }
@@ -44,7 +46,7 @@ func (m *Manager) Run() {
 	// Start the main dispatcher system
 }
 
-//Close kills the channels and manager related objects
+// Close kills the channels and manager related objects
 func (m *Manager) Close() {
 	log.Info("Closing Manager")
 }
