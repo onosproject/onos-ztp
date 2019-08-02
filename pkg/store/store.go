@@ -75,7 +75,7 @@ func (s *RoleStore) ReadRole(roleName string) (*proto.DeviceRoleConfig, error) {
 	return &roleConfig, nil
 }
 
-// ReadRole reads the named role configuration
+// DeleteRole removes the named role configuration
 func (s *RoleStore) DeleteRole(roleName string) (*proto.DeviceRoleConfig, error) {
 	role, err := s.ReadRole(roleName)
 	if err != nil {
