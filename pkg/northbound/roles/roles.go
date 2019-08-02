@@ -13,9 +13,10 @@
 // limitations under the License.
 
 // Package service implements the gRPC service for the zero-touch provisioning subsystem.
-package service
+package roles
 
 import (
+	"context"
 	"github.com/onosproject/onos-ztp/pkg/northbound"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"google.golang.org/grpc"
@@ -28,9 +29,24 @@ type Service struct {
 
 // Register registers the Service with the gRPC server.
 func (s Service) Register(r *grpc.Server) {
-	proto.RegisterZTPServiceServer(r, Server{})
+	proto.RegisterDeviceRoleServiceServer(r, Server{})
 }
 
 // Server implements the gRPC service for zero-touch provisioning facilities.
 type Server struct {
+}
+
+// Set provides means to add, update or delete device role configuration.
+func (s Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*proto.DeviceRoleChangeResponse, error) {
+	return &proto.DeviceRoleChangeResponse{}, nil
+}
+
+// Get provides means to query device role configuration.
+func (s Server) Get(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_GetServer) error {
+	return nil
+}
+
+// Subscribe provides means to monitor changes in the device role configuration.
+func (s Server) Subscribe(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_SubscribeServer) error {
+	return nil
 }
