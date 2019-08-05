@@ -47,6 +47,12 @@ func GetRootCommand() *cobra.Command {
 	cmd.AddCommand(newConfigCommand())
 	cmd.AddCommand(newCompletionCommand())
 
+	// TOTO: add the commands for the following usage
+	// roles list				// dumps out list of role names
+	// roles set "roleName" "jsonConfigFile"
+	// roles get "roleName"   	// dumps out JSON config
+	// roles remove "roleName"
+
 	// TODO: remove
 	getConnection(nil)
 	return cmd
