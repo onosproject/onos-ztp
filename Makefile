@@ -11,7 +11,7 @@ build: # @HELP build the Go binaries and run all validations (default)
 build:
 	CGO_ENABLED=1 go build -o build/_output/onos-ztp ./cmd/onos-ztp
 	CGO_ENABLED=1 go build -gcflags "all=-N -l" -o build/_output/onos-ztp-debug ./cmd/onos-ztp
-	# go build -o build/_output/onos ./cmd/onos
+	go build -o build/_output/onos ./cmd/onos
 
 test: # @HELP run the unit tests and source code validation
 test: build deps linters license_check
