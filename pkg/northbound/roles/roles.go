@@ -21,6 +21,7 @@ import (
 	"github.com/onosproject/onos-ztp/pkg/northbound"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"google.golang.org/grpc"
+	log "k8s.io/klog"
 )
 
 // Service is a Service implementation for administration.
@@ -35,6 +36,21 @@ func (s Service) Register(r *grpc.Server) {
 
 // Server implements the gRPC service for zero-touch provisioning facilities.
 type Server struct {
+	dispatcherStarted bool
+	subscriberCount   int
+	subscribers       map[int]*chan proto.DeviceRoleChange
+}
+
+func (s Server) register(changes chan proto.DeviceRoleChange) int {
+	// TODO: add hashing or mutex
+	s.subscriberCount++
+	key := s.subscriberCount
+	s.subscribers[key] = &changes
+	return key
+}
+
+func (s Server) unregister(key int) {
+	delete(s.subscribers, key)
 }
 
 // Set provides means to add, update or delete device role configuration.
@@ -63,8 +79,10 @@ func (s Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*pro
 		Config: cfg,
 	}
 
-	// Queue up device role change for subscribers and return it to the caller
-	//manager.GetManager().ChangesChannel <- change
+	// Queue up device role change for subscribers
+	manager.GetManager().ChangesChannel <- change
+
+	// ...and return it to the caller
 	return &proto.DeviceRoleChangeResponse{
 		Change: &change,
 	}, nil
@@ -94,6 +112,46 @@ func (s Server) sendRoleConfig(roleName string, stream proto.DeviceRoleService_G
 
 // Subscribe provides means to monitor changes in the device role configuration.
 func (s Server) Subscribe(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_SubscribeServer) error {
-	// TODO: implement this
+	s.startDispatcherIfNeeded()
+
+	// Create and register a channel on which to receive notifications
+	changeChan := make(chan proto.DeviceRoleChange)
+	key := s.register(changeChan)
+	defer s.unregister(key)
+
+	// ... then go to listen on it
+	for {
+		event, ok := <-changeChan
+		if !ok {
+			break
+		}
+		err := stream.Send(&event)
+		if err != nil {
+			log.Error("Unable to send notification for", event)
+			break
+		}
+	}
 	return nil
+}
+
+func (s Server) startDispatcherIfNeeded() {
+	if !s.dispatcherStarted {
+		s.dispatcherStarted = true
+		go s.dispatch()
+	}
+}
+
+func (s Server) dispatch() {
+	changes := manager.GetManager().ChangesChannel
+	for {
+		change, ok := <-changes
+		if !ok {
+			break
+		}
+		for _, sub := range s.subscribers {
+			*sub <- change
+		}
+	}
+	log.Info("Dispatcher terminated")
+	s.dispatcherStarted = false
 }

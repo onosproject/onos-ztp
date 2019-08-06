@@ -37,6 +37,7 @@ var (
 // SetUpServer sets up a test manager and a gRPC end-point
 // to which it registers the given service.
 func SetUpServer(port int16, service Service, waitGroup *sync.WaitGroup) {
+	_ = os.RemoveAll(DbPath)
 	err := os.MkdirAll(DbPath, 0755)
 	if err != nil {
 		log.Error("Unable to create DB directory")
