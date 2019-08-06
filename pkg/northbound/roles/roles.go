@@ -17,6 +17,7 @@ package roles
 
 import (
 	"context"
+	"github.com/onosproject/onos-ztp/pkg/manager"
 	"github.com/onosproject/onos-ztp/pkg/northbound"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"google.golang.org/grpc"
@@ -38,15 +39,61 @@ type Server struct {
 
 // Set provides means to add, update or delete device role configuration.
 func (s Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*proto.DeviceRoleChangeResponse, error) {
-	return &proto.DeviceRoleChangeResponse{}, nil
+	var err error
+	var cfg = r.GetConfig()
+	var changeType = proto.DeviceRoleChange_UPDATED
+
+	switch r.GetChange() {
+	case proto.DeviceRoleChangeRequest_ADD:
+		changeType = proto.DeviceRoleChange_ADDED
+		err = manager.GetManager().RoleStore.WriteRole(cfg, false)
+	case proto.DeviceRoleChangeRequest_UPDATE:
+		err = manager.GetManager().RoleStore.WriteRole(cfg, true)
+	case proto.DeviceRoleChangeRequest_DELETE:
+		changeType = proto.DeviceRoleChange_DELETED
+		cfg, err = manager.GetManager().RoleStore.DeleteRole(cfg.Role)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	change := proto.DeviceRoleChange{
+		Change: changeType,
+		Config: cfg,
+	}
+
+	// Queue up device role change for subscribers and return it to the caller
+	//manager.GetManager().ChangesChannel <- change
+	return &proto.DeviceRoleChangeResponse{
+		Change: &change,
+	}, nil
 }
 
 // Get provides means to query device role configuration.
 func (s Server) Get(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_GetServer) error {
-	return nil
+	roleName := req.GetRole()
+	if len(roleName) > 0 {
+		return s.sendRoleConfig(roleName, stream)
+	}
+
+	roles, err := manager.GetManager().RoleStore.ListRoles()
+	for i := 0; err == nil && i < len(roles); i++ {
+		err = s.sendRoleConfig(roles[i], stream)
+	}
+	return err
+}
+
+func (s Server) sendRoleConfig(roleName string, stream proto.DeviceRoleService_GetServer) error {
+	role, err := manager.GetManager().RoleStore.ReadRole(roleName)
+	if err == nil {
+		err = stream.Send(role)
+	}
+	return err
 }
 
 // Subscribe provides means to monitor changes in the device role configuration.
 func (s Server) Subscribe(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_SubscribeServer) error {
+	// TODO: implement this
 	return nil
 }

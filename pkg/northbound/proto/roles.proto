@@ -61,12 +61,12 @@ message DeviceRoleChangeRequest {
         ADD = 1;
         DELETE = 2;
     }
+    ChangeType change = 1;
     DeviceRoleConfig config = 2;
 }
 
 // DeviceRoleChangeResponse is a response for a change to a device role configuration
 message DeviceRoleChangeResponse {
-    int32 status = 1;
     DeviceRoleChange change = 2;
 }
 

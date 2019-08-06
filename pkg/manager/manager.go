@@ -16,6 +16,7 @@
 package manager
 
 import (
+	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"github.com/onosproject/onos-ztp/pkg/store"
 	log "k8s.io/klog"
 )
@@ -24,14 +25,17 @@ var mgr Manager
 
 // Manager single point of entry for the zero touch provisioning system.
 type Manager struct {
-	db store.RoleStore
+	RoleStore      store.RoleStore
+	ChangesChannel chan proto.DeviceRoleChange
 }
 
 // NewManager initializes the provisioning manager subsystem.
 func NewManager() (*Manager, error) {
 	log.Info("Creating Manager")
-	mgr = Manager{db: store.RoleStore{Dir: "db"}}
-
+	mgr = Manager{
+		RoleStore:      store.RoleStore{Dir: "roles"},
+		ChangesChannel: make(chan proto.DeviceRoleChange, 10),
+	}
 	return &mgr, nil
 }
 
