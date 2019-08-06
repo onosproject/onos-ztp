@@ -1,3 +1,17 @@
+// Copyright 2019-present Open Networking Foundation.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package command
 
 import (
@@ -10,13 +24,12 @@ import (
 	"log"
 	"os"
 )
-const ROLE_STORE_PATH = "stores"
 
+const DefaultRoleStorePath = "stores"
 
-
-func getDB() store.RoleStore{
+func getDB() store.RoleStore {
 	return store.RoleStore{
-		Dir: ROLE_STORE_PATH,
+		Dir: DefaultRoleStorePath,
 	}
 }
 func newRolesCommand() *cobra.Command {
@@ -32,7 +45,7 @@ func newRolesCommand() *cobra.Command {
 	return cmd
 }
 
-func newRolesRemoveCmd() *cobra.Command{
+func newRolesRemoveCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove <roleName>",
 		Short: "Remove a single role",
@@ -41,7 +54,7 @@ func newRolesRemoveCmd() *cobra.Command{
 	return cmd
 }
 
-func runRemoveRolesCmd(cmd *cobra.Command, args []string){
+func runRemoveRolesCmd(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		log.Fatal("Not enough arguments")
 	}
@@ -54,7 +67,7 @@ func runRemoveRolesCmd(cmd *cobra.Command, args []string){
 	fmt.Println("Deleted role")
 }
 
-func newRolesGetCmd() *cobra.Command{
+func newRolesGetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get <roleName>",
 		Short: "Get a single role",
@@ -63,7 +76,7 @@ func newRolesGetCmd() *cobra.Command{
 	return cmd
 }
 
-func runGetRoleCmd(cmd *cobra.Command, args []string){
+func runGetRoleCmd(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		log.Fatal("Not enough arguments")
 	}
@@ -73,23 +86,26 @@ func runGetRoleCmd(cmd *cobra.Command, args []string){
 	if err != nil {
 		log.Fatal(err)
 	}
-	jsonConfig, err := json.MarshalIndent(config, "", "  ")
+	jsonConfig, marshalErr := json.MarshalIndent(config, "", "  ")
+
+	if marshalErr != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(string(jsonConfig))
 }
 
-
-func newRolesSetCmd() *cobra.Command{
+func newRolesSetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set <fileName>",
 		Short: "Set a single role",
 		Run:   runSetRoleCmd,
 	}
-	cmd.PersistentFlags().Bool("overwrite",false,"Overwrite the role if it already exists")
+	cmd.PersistentFlags().Bool("overwrite", false, "Overwrite the role if it already exists")
 
 	return cmd
 }
 
-func runSetRoleCmd(cmd *cobra.Command, args []string){
+func runSetRoleCmd(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		log.Fatal("Not enough arguments")
 	}
@@ -117,15 +133,14 @@ func runSetRoleCmd(cmd *cobra.Command, args []string){
 	if err != nil {
 		log.Fatal(err)
 	}
-	writeErr := db.WriteRole(&config,overwrite)
+	writeErr := db.WriteRole(&config, overwrite)
 	if writeErr != nil {
 		log.Fatal(writeErr)
 	}
-	fmt.Printf("Role succesfully written to %s\n",args[0])
+	fmt.Printf("Role successfully written to %s\n", args[0])
 }
 
-
-func newRolesListCommand() *cobra.Command{
+func newRolesListCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List roles",
@@ -134,17 +149,15 @@ func newRolesListCommand() *cobra.Command{
 	return cmd
 }
 
-func runListRolesCmd(cmd *cobra.Command, args []string){
+func runListRolesCmd(cmd *cobra.Command, args []string) {
 	db := getDB()
 
 	roles, err := db.ListRoles()
 	if err != nil {
-		fmt.Printf("Could not get roles: %v",err)
+		fmt.Printf("Could not get roles: %v", err)
 		return
 	}
 	for idx, role := range roles {
-		fmt.Printf("%d) %s\n",idx + 1 ,role)
+		fmt.Printf("%d) %s\n", idx+1, role)
 	}
 }
-
-
