@@ -15,7 +15,7 @@
 package main
 
 import (
-	"github.com/onosproject/onos-control/pkg/cli"
+	"github.com/onosproject/onos-ztp/pkg/cli"
 )
 
 func main() {

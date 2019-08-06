@@ -46,6 +46,7 @@ func GetRootCommand() *cobra.Command {
 	cmd.AddCommand(newInitCommand())
 	cmd.AddCommand(newConfigCommand())
 	cmd.AddCommand(newCompletionCommand())
+	cmd.AddCommand(newRolesCommand())
 
 	// TOTO: add the commands for the following usage
 	// roles list				// dumps out list of role names
@@ -54,6 +55,7 @@ func GetRootCommand() *cobra.Command {
 	// roles remove "roleName"
 
 	// TODO: remove
+	//test()
 	getConnection(nil)
 	return cmd
 }
