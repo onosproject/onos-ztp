@@ -158,6 +158,6 @@ func runListRolesCmd(cmd *cobra.Command, args []string) {
 		return
 	}
 	for idx, role := range roles {
-		fmt.Printf("%d) %s\n", idx+1, role)
+		fmt.Printf("%d - %s\n", idx+1, role)
 	}
 }
