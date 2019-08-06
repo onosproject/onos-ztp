@@ -56,6 +56,10 @@ func newConfigGetCommand() *cobra.Command {
 
 func runConfigGetCommand(cmd *cobra.Command, args []string) {
 	value := viper.Get(args[0])
+	if value == nil{
+		ExitWithOutput("No value for key %s\n",args[0])
+		return
+	}
 	ExitWithOutput("%s\n", value)
 }
 

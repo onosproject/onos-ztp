@@ -16,11 +16,15 @@
 package command
 
 import (
+	"fmt"
 	"github.com/onosproject/onos-config/pkg/certs"
 	"github.com/onosproject/onos-config/pkg/northbound"
+	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/pkg/store"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"log"
 )
 
 // GetRootCommand returns the root CLI command.
@@ -46,6 +50,7 @@ func GetRootCommand() *cobra.Command {
 	cmd.AddCommand(newInitCommand())
 	cmd.AddCommand(newConfigCommand())
 	cmd.AddCommand(newCompletionCommand())
+	cmd.AddCommand(newRolesCommand())
 
 	// TOTO: add the commands for the following usage
 	// roles list				// dumps out list of role names
@@ -54,8 +59,49 @@ func GetRootCommand() *cobra.Command {
 	// roles remove "roleName"
 
 	// TODO: remove
+	//test()
 	getConnection(nil)
 	return cmd
+}
+
+func test(){
+	file := store.RoleStore{Dir: "stores"}
+	err := file.WriteRole(&proto.DeviceRoleConfig{
+		Role:                 "testRole2",
+		Config:               &proto.DeviceConfig{
+			SoftwareVersion:      "234234",
+			Properties:           []*proto.DeviceProperty{
+				{
+					Path:                 "asfasfsa",
+					Type:                 "asdfsaf",
+					Value:                "sadfasdfsfsdf",
+					XXX_NoUnkeyedLiteral: struct{}{},
+					XXX_unrecognized:     nil,
+					XXX_sizecache:        0,
+				},
+			},
+			XXX_NoUnkeyedLiteral: struct{}{},
+			XXX_unrecognized:     nil,
+			XXX_sizecache:        0,
+		},
+		Pipeline:             &proto.DevicePipeline{
+			Pipeline:             "test",
+			XXX_NoUnkeyedLiteral: struct{}{},
+			XXX_unrecognized:     nil,
+			XXX_sizecache:        0,
+		},
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
+	},true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	roles, err := file.ListRoles()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(roles)
 }
 
 func getConnection(cmd *cobra.Command) *grpc.ClientConn {

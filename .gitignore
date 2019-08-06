@@ -5,3 +5,4 @@ build/_output
 coverage.txt
 *.coverprofile
 .idea
+stores/*.json

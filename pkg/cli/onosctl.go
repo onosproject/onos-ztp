@@ -17,7 +17,7 @@ package cli
 
 import (
 	"fmt"
-	"github.com/onosproject/onos-control/pkg/cli/command"
+	"github.com/onosproject/onos-ztp/pkg/cli/command"
 	"os"
 )
 
