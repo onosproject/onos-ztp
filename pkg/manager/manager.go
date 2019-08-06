@@ -40,8 +40,12 @@ func NewManager() (*Manager, error) {
 }
 
 // LoadManager creates a provisioning subsystem manager primed with stores loaded from the specified files.
-func LoadManager() (*Manager, error) {
-	return NewManager()
+func LoadManager(roleStorePath string) (*Manager, error) {
+	mgr, err := NewManager()
+	if err == nil {
+		mgr.RoleStore.Dir = roleStorePath
+	}
+	return mgr, err
 }
 
 // Run starts a synchronizer based on the devices and the northbound services.
