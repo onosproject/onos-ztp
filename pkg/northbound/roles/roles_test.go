@@ -24,6 +24,7 @@ import (
 	"os"
 	"sync"
 	"testing"
+	"time"
 )
 
 var (
@@ -152,4 +153,43 @@ func Test_BadSet(t *testing.T) {
 		Config: &proto.DeviceRoleConfig{Role: "none"},
 	})
 	assert.Assert(t, err != nil, "unable to issue set delete request")
+}
+
+func Test_Subscribe(t *testing.T) {
+	conn, client := getClient()
+	defer conn.Close()
+	stream, err := client.Subscribe(context.Background(), &proto.DeviceRoleRequest{})
+	assert.NilError(t, err, "unable to issue subscribe request")
+
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		conn1, client1 := getClient()
+		defer conn1.Close()
+		testSetRole(t, client1, &proto.DeviceRoleChangeRequest{
+			Change: proto.DeviceRoleChangeRequest_ADD,
+			Config: &spineRole,
+		})
+	}()
+
+	w := sync.WaitGroup{}
+	w.Add(1)
+	i := 0
+	go func() {
+		in, err := stream.Recv()
+		assert.Assert(t, err != io.EOF && in != nil, "expecting message; not EOF")
+		assert.NilError(t, err, "unable to receive message")
+		assert.Assert(t,
+			in.GetChange() == proto.DeviceRoleChange_ADDED || in.GetChange() == proto.DeviceRoleChange_UPDATED,
+			"incorrect change type")
+		i++
+		w.Done()
+	}()
+	w.Wait()
+
+	err = stream.CloseSend()
+	assert.NilError(t, err, "unable to close stream")
+	assert.Equal(t, i, 1, "wrong role count")
+
+	// Allow time for cleanup
+	time.Sleep(100 * time.Millisecond)
 }
