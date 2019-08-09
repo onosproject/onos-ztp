@@ -21,6 +21,8 @@ import (
 	"github.com/onosproject/onos-ztp/pkg/northbound"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"google.golang.org/grpc"
+	log "k8s.io/klog"
+	"sync"
 )
 
 // Service is a Service implementation for administration.
@@ -30,15 +32,30 @@ type Service struct {
 
 // Register registers the Service with the gRPC server.
 func (s Service) Register(r *grpc.Server) {
-	proto.RegisterDeviceRoleServiceServer(r, Server{})
+	proto.RegisterDeviceRoleServiceServer(r, &Server{})
 }
 
 // Server implements the gRPC service for zero-touch provisioning facilities.
 type Server struct {
+	dispatcherStarted bool
+	subscriberCount   int
+	subscribers       sync.Map
+}
+
+func (s *Server) register(changes *chan proto.DeviceRoleChange) int {
+	// TODO: add hashing or mutex
+	s.subscriberCount++
+	key := s.subscriberCount
+	s.subscribers.Store(key, changes)
+	return key
+}
+
+func (s *Server) unregister(key int) {
+	s.subscribers.Delete(key)
 }
 
 // Set provides means to add, update or delete device role configuration.
-func (s Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*proto.DeviceRoleChangeResponse, error) {
+func (s *Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*proto.DeviceRoleChangeResponse, error) {
 	var err error
 	var cfg = r.GetConfig()
 	var changeType = proto.DeviceRoleChange_UPDATED
@@ -63,15 +80,17 @@ func (s Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*pro
 		Config: cfg,
 	}
 
-	// Queue up device role change for subscribers and return it to the caller
-	//manager.GetManager().ChangesChannel <- change
+	// Queue up device role change for subscribers
+	manager.GetManager().ChangesChannel <- change
+
+	// ...and return it to the caller
 	return &proto.DeviceRoleChangeResponse{
 		Change: &change,
 	}, nil
 }
 
 // Get provides means to query device role configuration.
-func (s Server) Get(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_GetServer) error {
+func (s *Server) Get(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_GetServer) error {
 	roleName := req.GetRole()
 	if len(roleName) > 0 {
 		return s.sendRoleConfig(roleName, stream)
@@ -84,7 +103,7 @@ func (s Server) Get(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService
 	return err
 }
 
-func (s Server) sendRoleConfig(roleName string, stream proto.DeviceRoleService_GetServer) error {
+func (s *Server) sendRoleConfig(roleName string, stream proto.DeviceRoleService_GetServer) error {
 	role, err := manager.GetManager().RoleStore.ReadRole(roleName)
 	if err == nil {
 		err = stream.Send(role)
@@ -93,7 +112,50 @@ func (s Server) sendRoleConfig(roleName string, stream proto.DeviceRoleService_G
 }
 
 // Subscribe provides means to monitor changes in the device role configuration.
-func (s Server) Subscribe(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_SubscribeServer) error {
-	// TODO: implement this
+func (s *Server) Subscribe(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_SubscribeServer) error {
+	s.startDispatcherIfNeeded()
+
+	// Create and register a channel on which to receive notifications
+	changeChan := make(chan proto.DeviceRoleChange)
+	key := s.register(&changeChan)
+	defer s.unregister(key)
+
+	// ... then go to listen on it
+	for {
+		event, ok := <-changeChan
+		if !ok {
+			break
+		}
+		err := stream.Send(&event)
+		if err != nil {
+			log.Error("Unable to send notification for", event)
+			break
+		}
+	}
 	return nil
+}
+
+func (s *Server) startDispatcherIfNeeded() {
+	if !s.dispatcherStarted {
+		s.dispatcherStarted = true
+		go s.dispatch()
+	}
+}
+
+func (s *Server) dispatch() {
+	changes := manager.GetManager().ChangesChannel
+	log.Info("Dispatcher started")
+	for {
+		change, ok := <-changes
+		if !ok {
+			break
+		}
+		s.subscribers.Range(func(key, sub interface{}) bool {
+			ch := sub.(*chan proto.DeviceRoleChange)
+			*ch <- change
+			return true
+		})
+	}
+	log.Info("Dispatcher terminated")
+	s.dispatcherStarted = false
 }
