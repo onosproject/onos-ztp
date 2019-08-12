@@ -19,6 +19,7 @@ import (
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"github.com/onosproject/onos-ztp/pkg/store"
 	log "k8s.io/klog"
+	"os"
 )
 
 var mgr Manager
@@ -41,6 +42,12 @@ func NewManager() (*Manager, error) {
 
 // LoadManager creates a provisioning subsystem manager primed with stores loaded from the specified files.
 func LoadManager(roleStorePath string) (*Manager, error) {
+	err := os.MkdirAll(roleStorePath, 0755)
+	if err != nil {
+		log.Errorf("Unable to create role store directory %s due to %v", roleStorePath, err)
+		return nil, err
+	}
+
 	mgr, err := NewManager()
 	if err == nil {
 		mgr.RoleStore.Dir = roleStorePath
@@ -48,7 +55,7 @@ func LoadManager(roleStorePath string) (*Manager, error) {
 	return mgr, err
 }
 
-// Run starts a synchronizer based on the devices and the northbound services.
+// Run starts any background tasks associated with the manager.
 func (m *Manager) Run() {
 	log.Info("Starting Manager")
 	// Start the main dispatcher system
