@@ -6,3 +6,4 @@ coverage.txt
 *.coverprofile
 .idea
 stores/*.json
+roledb

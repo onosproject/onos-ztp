@@ -67,7 +67,7 @@ func main() {
 	})
 	log.Info("Starting onos-ztp")
 
-	mgr, err := manager.LoadManager("roles")
+	mgr, err := manager.LoadManager("roledb")
 	if err != nil {
 		log.Fatal("Unable to load onos-ztp ", err)
 	} else {

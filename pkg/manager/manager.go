@@ -33,7 +33,7 @@ type Manager struct {
 func NewManager() (*Manager, error) {
 	log.Info("Creating Manager")
 	mgr = Manager{
-		RoleStore:      store.RoleStore{Dir: "roles"},
+		RoleStore:      store.RoleStore{Dir: "roledb"},
 		ChangesChannel: make(chan proto.DeviceRoleChange, 10),
 	}
 	return &mgr, nil
