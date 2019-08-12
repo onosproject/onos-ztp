@@ -8,5 +8,5 @@ RUN apk add libc6-compat
 USER nobody
 
 COPY --from=base /go/src/github.com/onosproject/onos-ztp/build/_output/onos-ztp /usr/local/bin/onos-ztp
-
+COPY --from=base /go/src/github.com/onosproject/onos-ztp/build/_output/onos /usr/local/bin/onos
 ENTRYPOINT ["onos-ztp"]
