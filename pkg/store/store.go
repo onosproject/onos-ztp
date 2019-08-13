@@ -56,7 +56,7 @@ func (s *RoleStore) WriteRole(roleConfig *proto.DeviceRoleConfig, overwrite bool
 
 	if _, err := os.Stat(s.path(roleConfig.Role)); err == nil {
 		if !overwrite {
-			return errors.New("Overwrite was set to false but role" + s.path(roleConfig.Role) + "already exists")
+			return errors.New("Overwrite was set to false but role" + s.path(roleConfig.Role) + " already exists")
 		}
 	}
 	return ioutil.WriteFile(s.path(roleConfig.Role), jsonBlob, 0644)

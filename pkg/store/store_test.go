@@ -21,6 +21,12 @@ import (
 	"testing"
 )
 
+// TestMain initializes the test suite context.
+func TestMain(m *testing.M) {
+	_ = os.RemoveAll("/tmp/roledb")
+	os.Exit(m.Run())
+}
+
 func setupRepo(t *testing.T, path string) RoleStore {
 	err := os.MkdirAll(path, 0755)
 	if err != nil {

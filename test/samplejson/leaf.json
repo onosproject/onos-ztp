@@ -1,0 +1,1 @@
+{"role":"leaf","config":{"softwareVersion":"2019.08.02.c0ffee","properties":[{"path":"/foo/bar","type":"string_val","value":"totally fubar"}]},"pipeline":{"pipeline":"complex"}}

@@ -3,6 +3,7 @@ module github.com/onosproject/onos-ztp
 go 1.12
 
 require (
+	github.com/docker/docker v1.13.1
 	github.com/golang/protobuf v1.3.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onosproject/onos-config v0.0.0-20190730183719-5ea03688cbcb
