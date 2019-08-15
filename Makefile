@@ -46,7 +46,7 @@ update-deps: # @HELP pull updated dependencies
 	go get github.com/onosproject/onos-config
 
 onos-ztp-base-docker: # @HELP build onos-ztp base Docker image
-onos-ztp-baze-docker: update-deps
+onos-ztp-base-docker: update-deps
 	@go mod vendor
 	docker build . -f build/base/Dockerfile \
 		--build-arg ONOS_BUILD_VERSION=${ONOS_BUILD_VERSION} \
