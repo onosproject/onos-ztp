@@ -15,18 +15,43 @@
 package southbound
 
 import (
-	"fmt"
-	"github.com/onosproject/onos-config/pkg/certs"
 	"github.com/onosproject/onos-config/pkg/utils"
+	"github.com/onosproject/onos-topo/pkg/northbound/device"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"github.com/openconfig/gnmi/proto/gnmi"
-	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-	"log"
+	log "k8s.io/klog"
 	"strings"
 )
 
-func MakeSetRequest(config *proto.DeviceRoleConfig) *gnmi.SetRequest {
+const (
+	configAddress = "onos-config:5150"
+)
+
+// GNMIProvisioner handles provisioning of device configuration via gNMI interface.
+type GNMIProvisioner struct {
+	gnmi gnmi.GNMIClient
+}
+
+// Init initializes the gNMI provisioner
+func (p *GNMIProvisioner) Init(opts ...grpc.DialOption) error {
+	gnmiConn, err := grpc.Dial(configAddress, opts...)
+	if err != nil {
+		log.Error("Unable to connect to onos-config", err)
+		return err
+	}
+	p.gnmi = gnmi.NewGNMIClient(gnmiConn)
+	return nil
+}
+
+// Provision runs the gNMI provisioning task
+func (p *GNMIProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfig) error {
+	// TODO: implement this fully
+	_ = makeSetRequest(cfg)
+	return nil
+}
+
+func makeSetRequest(config *proto.DeviceRoleConfig) *gnmi.SetRequest {
 	updatedPaths := make([]*gnmi.Update, len(config.Config.Properties))
 	for _, property := range config.Config.Properties {
 
@@ -64,23 +89,4 @@ func parseVal(prop proto.DeviceProperty) *gnmi.TypedValue {
 			Value: &gnmi.TypedValue_StringVal{StringVal: ""},
 		}
 	}
-}
-
-func getConfig(key string) string {
-	return viper.GetString(key)
-}
-
-func GetClient(address string) *gnmi.GNMIClient {
-	keyPath := getConfig("keyPath")
-	certPath := getConfig("certPath")
-	opts, err := certs.HandleCertArgs(&keyPath, &certPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	conn, err := grpc.Dial(address, opts...)
-	if err != nil {
-		fmt.Println("Can't connect", err)
-	}
-	client := gnmi.NewGNMIClient(conn)
-	return &client
 }

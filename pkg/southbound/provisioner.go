@@ -16,61 +16,44 @@ package southbound
 
 import (
 	"github.com/onosproject/onos-topo/pkg/northbound/device"
-	"github.com/openconfig/gnmi/proto/gnmi"
-	"google.golang.org/grpc"
+	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/pkg/store"
 	log "k8s.io/klog"
 )
 
-const (
-	configAddress = "onos-config:5150"
-	//controlAddress = "onos-control:5150"
-)
+// ProvisionerTask defines a contract of an activity that provisions an aspect of device operation.
+type ProvisionerTask interface {
+	// Provision sets up a device for an aspect of device operation.
+	Provision(d *device.Device, cfg *proto.DeviceRoleConfig) error
+}
 
 // DeviceProvisioner is responsible for provisioning devices with the role-specific configurations.
 type DeviceProvisioner struct {
-	gnmi gnmi.GNMIClient
+	Tasks []ProvisionerTask
+	Store *store.RoleStore
 }
 
-func (p *DeviceProvisioner) Start(devices chan *device.Device, dialOptions ...grpc.DialOption) error {
-	gnmiConn, err := grpc.Dial(configAddress, dialOptions...)
-	if err != nil {
-		log.Error("Unable to connect to onos-config", err)
-		return err
-	}
-
-	//ctlConn, err := grpc.Dial(controlAddress, dialOptions...)
-	//if err != nil {
-	//	log.Error("Unable to connect to onos-control", err)
-	//	return err
-	//}
-
-	p.gnmi = gnmi.NewGNMIClient(gnmiConn)
+func (p *DeviceProvisioner) Start(devices chan *device.Device) {
 	go func() {
 		for {
 			d := <-devices
-			p.provisionDevice(d)
+			if d != nil {
+				cfg, err := p.Store.ReadRole(d.GetVersion())
+				if err == nil {
+					p.provisionDevice(d, cfg)
+				}
+			}
 		}
 	}()
-	return nil
 }
 
-func (p *DeviceProvisioner) provisionDevice(d *device.Device) {
+func (p *DeviceProvisioner) provisionDevice(d *device.Device, cfg *proto.DeviceRoleConfig) {
 	log.Infof("Provisioning device %s with config for role %s...", d.GetID(), d.GetVersion())
-	err := p.provisionConfig(d)
-	if err != nil {
-		log.Errorf("Unable to provision device %s configuration due to %v", d.GetID(), err)
-	} else {
-		err = p.provisionControl(d)
+	for _, t := range p.Tasks {
+		err := t.Provision(d, cfg)
 		if err != nil {
-			log.Errorf("Unable to provision device %s pipeline due to %v", d.GetID(), err)
+			log.Errorf("Unable to provision %s due to %v", d.GetID(), err)
+			return
 		}
 	}
-}
-
-func (p *DeviceProvisioner) provisionConfig(d *device.Device) error {
-	return nil
-}
-
-func (p *DeviceProvisioner) provisionControl(d *device.Device) error {
-	return nil
 }

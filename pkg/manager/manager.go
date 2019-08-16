@@ -59,11 +59,24 @@ func LoadManager(roleStorePath string, opts ...grpc.DialOption) (*Manager, error
 	}
 
 	mgr, err := NewManager()
-	if err == nil {
-		mgr.deviceChanel = make(chan *device.Device)
-		mgr.RoleStore.Dir = roleStorePath
-		mgr.connOptions = opts
+	if err != nil {
+		return nil, err
 	}
+
+	mgr.deviceChanel = make(chan *device.Device)
+	mgr.RoleStore.Dir = roleStorePath
+	mgr.connOptions = opts
+
+	gnmiTask := southbound.GNMIProvisioner{}
+	err = gnmiTask.Init(opts...)
+	if err != nil {
+		log.Error("Unable to setup GNMI provisioner", err)
+		return nil, err
+	}
+
+	// TODO: add p4Task
+
+	mgr.provisioner.Tasks = []southbound.ProvisionerTask{&gnmiTask}
 	return mgr, err
 }
 
@@ -76,10 +89,7 @@ func (m *Manager) Run() {
 	if err != nil {
 		log.Error("Unable to start device monitor", err)
 	} else {
-		err = m.provisioner.Start(m.deviceChanel, m.connOptions...)
-		if err != nil {
-			log.Error("Unable to start device provisioner", err)
-		}
+		m.provisioner.Start(m.deviceChanel)
 	}
 }
 
