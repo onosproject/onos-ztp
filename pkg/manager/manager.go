@@ -16,8 +16,11 @@
 package manager
 
 import (
+	"github.com/onosproject/onos-topo/pkg/northbound/device"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/pkg/southbound"
 	"github.com/onosproject/onos-ztp/pkg/store"
+	"google.golang.org/grpc"
 	log "k8s.io/klog"
 	"os"
 )
@@ -28,6 +31,11 @@ var mgr Manager
 type Manager struct {
 	RoleStore      store.RoleStore
 	ChangesChannel chan proto.DeviceRoleChange
+
+	deviceChanel chan *device.Device
+	connOptions  []grpc.DialOption
+	monitor      southbound.DeviceMonitor
+	provisioner  southbound.DeviceProvisioner
 }
 
 // NewManager initializes the provisioning manager subsystem.
@@ -36,12 +44,14 @@ func NewManager() (*Manager, error) {
 	mgr = Manager{
 		RoleStore:      store.RoleStore{Dir: "roledb"},
 		ChangesChannel: make(chan proto.DeviceRoleChange, 10),
+		monitor:        southbound.DeviceMonitor{},
+		provisioner:    southbound.DeviceProvisioner{},
 	}
 	return &mgr, nil
 }
 
 // LoadManager creates a provisioning subsystem manager primed with stores loaded from the specified files.
-func LoadManager(roleStorePath string) (*Manager, error) {
+func LoadManager(roleStorePath string, opts ...grpc.DialOption) (*Manager, error) {
 	err := os.MkdirAll(roleStorePath, 0755)
 	if err != nil {
 		log.Errorf("Unable to create role store directory %s due to %v", roleStorePath, err)
@@ -49,16 +59,44 @@ func LoadManager(roleStorePath string) (*Manager, error) {
 	}
 
 	mgr, err := NewManager()
-	if err == nil {
-		mgr.RoleStore.Dir = roleStorePath
+	if err != nil {
+		return nil, err
 	}
+
+	mgr.deviceChanel = make(chan *device.Device)
+	mgr.RoleStore.Dir = roleStorePath
+	mgr.connOptions = opts
+
+	err = mgr.monitor.Init(opts...)
+	if err != nil {
+		log.Error("Unable to setup topology monitor", err)
+		return nil, err
+	}
+
+	gnmiTask := southbound.GNMIProvisioner{}
+	err = gnmiTask.Init(opts...)
+	if err != nil {
+		log.Error("Unable to setup GNMI provisioner", err)
+		return nil, err
+	}
+
+	// TODO: add p4Task
+
+	mgr.provisioner.Tasks = []southbound.ProvisionerTask{&gnmiTask}
 	return mgr, err
 }
 
 // Run starts any background tasks associated with the manager.
 func (m *Manager) Run() {
 	log.Info("Starting Manager")
-	// Start the main dispatcher system
+
+	// Start the device monitor and provisioner components.
+	err := m.monitor.Start(m.deviceChanel)
+	if err != nil {
+		log.Error("Unable to start device monitor", err)
+	} else {
+		m.provisioner.Start(m.deviceChanel)
+	}
 }
 
 // Close kills the channels and manager related objects

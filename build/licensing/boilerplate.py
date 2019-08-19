@@ -126,7 +126,7 @@ def file_passes(filename, refs, regexs):
                 break
 
     # if we don't match the reference at this point, fail
-    if ref != data:
+    if ref != data and not generated:
         print("Header in %s does not match reference, diff:" % filename, file=verbose_out)
         if args.verbose:
             print(file=verbose_out)

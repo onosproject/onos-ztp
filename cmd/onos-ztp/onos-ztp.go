@@ -30,6 +30,7 @@ package main
 
 import (
 	"flag"
+	"github.com/onosproject/onos-ztp/pkg/certs"
 	"github.com/onosproject/onos-ztp/pkg/manager"
 	"github.com/onosproject/onos-ztp/pkg/northbound"
 	"github.com/onosproject/onos-ztp/pkg/northbound/admin"
@@ -67,7 +68,12 @@ func main() {
 	})
 	log.Info("Starting onos-ztp")
 
-	mgr, err := manager.LoadManager("roledb")
+	opts, err := certs.HandleCertArgs(keyPath, certPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mgr, err := manager.LoadManager("roledb", opts...)
 	if err != nil {
 		log.Fatal("Unable to load onos-ztp ", err)
 	} else {
