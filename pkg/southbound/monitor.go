@@ -32,16 +32,19 @@ const (
 	topoAddress = "onos-topo:5150"
 )
 
-// Start kicks off the device monitor listening for the topology device add events.
-func (m *DeviceMonitor) Start(deviceEvents chan *device.Device, dialOptions ...grpc.DialOption) error {
+func (m *DeviceMonitor) Init(dialOptions ...grpc.DialOption) error {
 	conn, err := grpc.Dial(topoAddress, dialOptions...)
 	if err != nil {
 		log.Error("Unable to connect to topology server", err)
 		return err
 	}
-
 	m.client = device.NewDeviceServiceClient(conn)
-	list, err := m.client.List(context.Background(), &device.ListRequest{
+	return nil
+}
+
+// Start kicks off the device monitor listening for the topology device add events.
+func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
+	topoEvents, err := m.client.List(context.Background(), &device.ListRequest{
 		Subscribe: true,
 	})
 	if err != nil {
@@ -51,14 +54,13 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device, dialOptions ...g
 	go func() {
 		defer close(deviceEvents)
 		for {
-			event, err := list.Recv()
+			event, err := topoEvents.Recv()
 			if err == io.EOF {
 				break
 			}
 			if err != nil {
 				log.Error("Unable to receive device event", err)
-			}
-			if event.Type == device.ListResponse_ADDED {
+			} else if event.Type == device.ListResponse_ADDED {
 				deviceEvents <- event.Device
 			}
 		}

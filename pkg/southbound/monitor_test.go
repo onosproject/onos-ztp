@@ -13,3 +13,61 @@
 // limitations under the License.
 
 package southbound
+
+import (
+	"github.com/golang/mock/gomock"
+	"github.com/onosproject/onos-topo/pkg/northbound/device"
+	"github.com/onosproject/onos-ztp/pkg/southbound/mock_device"
+	"gotest.tools/assert"
+	"io"
+	"testing"
+	"time"
+)
+
+func Test_Basics(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mock_device.NewMockDeviceServiceClient(ctrl)
+	stream := mock_device.NewMockDeviceService_ListClient(ctrl)
+
+	m.EXPECT().List(gomock.Any(), gomock.Any()).
+		Return(stream, nil)
+	stream.EXPECT().Recv().
+		Return(&device.ListResponse{
+			Type: device.ListResponse_ADDED,
+			Device: &device.Device{
+				ID: "foobar",
+			},
+		}, nil)
+	stream.EXPECT().Recv().
+		Return(nil, io.ErrClosedPipe)
+	stream.EXPECT().Recv().
+		Return(nil, io.EOF)
+
+	monitor := DeviceMonitor{m}
+	ch := make(chan *device.Device)
+	err := monitor.Start(ch)
+	assert.NilError(t, err, "unexpected error")
+
+	dev := <-ch
+	assert.Assert(t, dev.GetID() == "foobar", "incorrect device")
+
+	time.Sleep(100 * time.Millisecond)
+}
+
+func Test_ListError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mock_device.NewMockDeviceServiceClient(ctrl)
+
+	m.EXPECT().List(gomock.Any(), gomock.Any()).
+		Return(nil, io.ErrUnexpectedEOF)
+
+	monitor := DeviceMonitor{m}
+	ch := make(chan *device.Device)
+	err := monitor.Start(ch)
+	assert.Error(t, err, "unexpected EOF", "wrong error")
+	time.Sleep(100 * time.Millisecond)
+}

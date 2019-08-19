@@ -67,6 +67,12 @@ func LoadManager(roleStorePath string, opts ...grpc.DialOption) (*Manager, error
 	mgr.RoleStore.Dir = roleStorePath
 	mgr.connOptions = opts
 
+	err = mgr.monitor.Init(opts...)
+	if err != nil {
+		log.Error("Unable to setup topology monitor", err)
+		return nil, err
+	}
+
 	gnmiTask := southbound.GNMIProvisioner{}
 	err = gnmiTask.Init(opts...)
 	if err != nil {
@@ -85,7 +91,7 @@ func (m *Manager) Run() {
 	log.Info("Starting Manager")
 
 	// Start the device monitor and provisioner components.
-	err := m.monitor.Start(m.deviceChanel, m.connOptions...)
+	err := m.monitor.Start(m.deviceChanel)
 	if err != nil {
 		log.Error("Unable to start device monitor", err)
 	} else {

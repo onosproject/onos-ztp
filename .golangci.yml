@@ -8,6 +8,7 @@ linters:
     - errcheck
 run:
   skip-dirs:
+    - pkg/southbound/mock_device
 
 issues:
   exclude-rules:
