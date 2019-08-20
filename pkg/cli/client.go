@@ -22,10 +22,10 @@ import (
 )
 
 const (
-	defaultAddress = "onos-config:5150"
+	defaultAddress = "onos-ztp:5150"
 )
 
-// getConnection returns a gRPC client connection to the config service
+// getConnection returns a gRPC client connection to the ztp service
 func getConnection() *grpc.ClientConn {
 	address := getConfigOrDefault("address", defaultAddress).(string)
 	certPath := getConfigString("tls.certPath")
