@@ -17,7 +17,7 @@ package southbound
 import (
 	"github.com/golang/mock/gomock"
 	"github.com/onosproject/onos-topo/pkg/northbound/device"
-	"github.com/onosproject/onos-ztp/pkg/southbound/mock_device"
+	"github.com/onosproject/onos-ztp/pkg/southbound/mock"
 	"gotest.tools/assert"
 	"io"
 	"testing"
@@ -28,8 +28,8 @@ func Test_Basics(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mock_device.NewMockDeviceServiceClient(ctrl)
-	stream := mock_device.NewMockDeviceService_ListClient(ctrl)
+	m := mock.NewMockDeviceServiceClient(ctrl)
+	stream := mock.NewMockDeviceService_ListClient(ctrl)
 
 	m.EXPECT().List(gomock.Any(), gomock.Any()).
 		Return(stream, nil)
@@ -60,7 +60,7 @@ func Test_ListError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	m := mock_device.NewMockDeviceServiceClient(ctrl)
+	m := mock.NewMockDeviceServiceClient(ctrl)
 
 	m.EXPECT().List(gomock.Any(), gomock.Any()).
 		Return(nil, io.ErrUnexpectedEOF)

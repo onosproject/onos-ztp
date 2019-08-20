@@ -2,7 +2,7 @@
 // Source: github.com/onosproject/onos-topo/pkg/northbound/device (interfaces: DeviceServiceClient)
 
 // Package mock_device is a generated GoMock package.
-package mock_device
+package mock
 
 import (
 	context "context"
