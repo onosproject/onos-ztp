@@ -25,7 +25,9 @@ before_script:
 jobs:
   include:
     - stage: tests
-      script: make coverage
+      script:
+        - make coverage
+        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./build/bin/push-images; fi'
     - stage: CLI build
       if: type != pull_request
       script:
