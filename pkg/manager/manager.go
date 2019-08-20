@@ -66,6 +66,7 @@ func LoadManager(roleStorePath string, opts ...grpc.DialOption) (*Manager, error
 	mgr.deviceChanel = make(chan *device.Device)
 	mgr.RoleStore.Dir = roleStorePath
 	mgr.connOptions = opts
+	mgr.provisioner.Store = &mgr.RoleStore
 
 	err = mgr.monitor.Init(opts...)
 	if err != nil {

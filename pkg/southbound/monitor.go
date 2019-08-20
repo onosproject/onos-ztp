@@ -53,6 +53,7 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 
 	go func() {
 		defer close(deviceEvents)
+		log.Info("Listening for device events")
 		for {
 			event, err := topoEvents.Recv()
 			if err == io.EOF {
@@ -61,6 +62,7 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 			if err != nil {
 				log.Error("Unable to receive device event", err)
 			} else if event.Type == device.ListResponse_ADDED {
+				log.Infof("Detected new device %s", event.Device.GetID())
 				deviceEvents <- event.Device
 			}
 		}
