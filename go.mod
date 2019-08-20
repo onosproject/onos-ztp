@@ -14,7 +14,7 @@ require (
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/mattn/goveralls v0.0.2 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/onosproject/onos-config v0.0.0-20190815223347-0e0bb6535d69
+	github.com/onosproject/onos-config v0.0.0-20190820160549-64e433448cdd
 	github.com/onosproject/onos-test v0.0.0-20190816152740-71c6d1c52be8 // indirect
 	github.com/onosproject/onos-topo v0.0.0-20190814235916-567580ff7720
 	github.com/openconfig/gnmi v0.0.0-20180912164834-33a1865c3029

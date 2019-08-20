@@ -38,7 +38,7 @@ func (p *DeviceProvisioner) Start(devices chan *device.Device) {
 		for {
 			d := <-devices
 			if d != nil {
-				cfg, err := p.Store.ReadRole(d.GetVersion())
+				cfg, err := p.Store.ReadRole(string(d.GetRole()))
 				if err == nil {
 					p.provisionDevice(d, cfg)
 				}
@@ -48,7 +48,7 @@ func (p *DeviceProvisioner) Start(devices chan *device.Device) {
 }
 
 func (p *DeviceProvisioner) provisionDevice(d *device.Device, cfg *proto.DeviceRoleConfig) {
-	log.Infof("Provisioning device %s with config for role %s...", d.GetID(), d.GetVersion())
+	log.Infof("Provisioning device %s with config for role %s...", d.GetID(), cfg.GetRole())
 	for _, t := range p.Tasks {
 		err := t.Provision(d, cfg)
 		if err != nil {
