@@ -73,7 +73,7 @@ func Test_NormalEvent(t *testing.T) {
 	devices := make(chan *device.Device)
 	p.Start(devices)
 
-	d := device.Device{ID: "foo", Version: "leaf"}
+	d := device.Device{ID: "foo", Role: "leaf"}
 	devices <- &d
 	task.wg.Wait()
 
@@ -89,7 +89,7 @@ func Test_BadEvent(t *testing.T) {
 	devices := make(chan *device.Device)
 	p.Start(devices)
 
-	d := device.Device{ID: "foo", Version: "leaf"}
+	d := device.Device{ID: "foo", Role: "leaf"}
 	devices <- &d
 	task.wg.Wait()
 
