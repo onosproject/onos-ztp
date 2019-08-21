@@ -168,6 +168,8 @@ github.com/onosproject/onos-config v0.0.0-20190815223347-0e0bb6535d69 h1:q/zVyv6
 github.com/onosproject/onos-config v0.0.0-20190815223347-0e0bb6535d69/go.mod h1:udnXlJjwzopWnkwEzAzjXj7yLKnmOitznBmlY4ClA1I=
 github.com/onosproject/onos-config v0.0.0-20190820160549-64e433448cdd h1:Uu1LnK8GLQm8z8l7wutVtfRcn8FarkNO0Ss2ZLTnFrw=
 github.com/onosproject/onos-config v0.0.0-20190820160549-64e433448cdd/go.mod h1:udnXlJjwzopWnkwEzAzjXj7yLKnmOitznBmlY4ClA1I=
+github.com/onosproject/onos-config v0.0.0-20190821130446-98a7d0329cdd h1:a+9HxBjsMs2cjrk2XKgoybq+ZhJhnAmGudYl6GsQHyc=
+github.com/onosproject/onos-config v0.0.0-20190821130446-98a7d0329cdd/go.mod h1:udnXlJjwzopWnkwEzAzjXj7yLKnmOitznBmlY4ClA1I=
 github.com/onosproject/onos-control v0.0.0-20190715190020-706a2ee0d37b/go.mod h1:pHxuBLlYpyZbiaBDKFkO+O9RixBd/qMPR8t5mizwbQY=
 github.com/onosproject/onos-test v0.0.0-20190816152740-71c6d1c52be8 h1:EyRRB00j95raVbYLY6aBzS6R3OwH75pac044YLWpZUM=
 github.com/onosproject/onos-test v0.0.0-20190816152740-71c6d1c52be8/go.mod h1:VzGGSpj8PmglwBD87QLC8I9hZT6OB0bM5BkcyVTYL8U=
@@ -176,6 +178,8 @@ github.com/onosproject/onos-topo v0.0.0-20190809180402-2931d9c31bf5 h1:tKu/NnNxC
 github.com/onosproject/onos-topo v0.0.0-20190809180402-2931d9c31bf5/go.mod h1:qIMVOeHN111lHBmYqNmNExmkBDljozg580QM3M75sSo=
 github.com/onosproject/onos-topo v0.0.0-20190814235916-567580ff7720 h1:Y59IT1BUJHVp6Pp1zplkZ0MG12gaGJzjQLBBSWKDi3Q=
 github.com/onosproject/onos-topo v0.0.0-20190814235916-567580ff7720/go.mod h1:OdpECWGQ3Fm96sQjse0E9hatoBiCga4VD8jnxadi5Ik=
+github.com/onosproject/onos-topo v0.0.0-20190821193159-507346a0476a h1:SzPgcNK2rbj3bfGbEi3eoZfbbrNsN3oVC0g351iInjw=
+github.com/onosproject/onos-topo v0.0.0-20190821193159-507346a0476a/go.mod h1:OdpECWGQ3Fm96sQjse0E9hatoBiCga4VD8jnxadi5Ik=
 github.com/onsi/ginkgo v0.0.0-20170829012221-11459a886d9c/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
 github.com/onsi/ginkgo v1.8.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=

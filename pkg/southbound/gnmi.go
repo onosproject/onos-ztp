@@ -16,10 +16,12 @@ package southbound
 
 import (
 	"context"
+	ext "github.com/onosproject/onos-config/pkg/northbound/gnmi"
 	"github.com/onosproject/onos-config/pkg/utils"
 	"github.com/onosproject/onos-topo/pkg/northbound/device"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"github.com/openconfig/gnmi/proto/gnmi"
+	"github.com/openconfig/gnmi/proto/gnmi_ext"
 	"google.golang.org/grpc"
 	log "k8s.io/klog"
 	"strconv"
@@ -48,37 +50,55 @@ func (p *GNMIProvisioner) Init(opts ...grpc.DialOption) error {
 // Provision runs the gNMI provisioning task
 func (p *GNMIProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfig) error {
 	// TODO: implement this fully
-	request := makeSetRequest(cfg)
+	request := makeSetRequest(d, cfg)
+	log.Errorf("Applying device configuration %v to %s", request, d.GetID())
+
 	response, err := p.gnmi.Set(context.Background(), request)
 	if err != nil {
-		log.Errorf("Unable to apply device configuration to %s", d.GetID())
+		log.Errorf("Unable to apply device configuration %v to %s", request, d.GetID())
 		return err
 	}
 	log.Infof("Applied gNMI configuration to device %s; %v", d.GetID(), response)
 	return nil
 }
 
-func makeSetRequest(config *proto.DeviceRoleConfig) *gnmi.SetRequest {
+func makeSetRequest(d *device.Device, config *proto.DeviceRoleConfig) *gnmi.SetRequest {
 	updatedPaths := make([]*gnmi.Update, 0)
 	for _, prop := range config.Config.Properties {
-		path, _ := utils.ParseGNMIElements([]string{prop.Path})
 		value, err := parseVal(*prop)
 		if err != nil {
 			log.Errorf("Unable to convert property %s to type %s using value [%s]", prop.Path, prop.Type, prop.Value)
 		} else {
+			path, _ := utils.ParseGNMIElements([]string{prop.Path})
 			updatedPaths = append(updatedPaths,
 				&gnmi.Update{
 					Path: &gnmi.Path{
 						Elem:   path.GetElem(),
-						Target: path.GetTarget(),
+						Target: d.GetTarget(),
 					},
 					Val: value,
 				})
 		}
 	}
 
+	ext101Version := gnmi_ext.Extension_RegisteredExt{
+		RegisteredExt: &gnmi_ext.RegisteredExtension{
+			Id:  ext.GnmiExtensionVersion,
+			Msg: []byte(d.GetVersion()),
+		},
+	}
+	ext102Type := gnmi_ext.Extension_RegisteredExt{
+		RegisteredExt: &gnmi_ext.RegisteredExtension{
+			Id:  ext.GnmiExtensionDeviceType,
+			Msg: []byte(d.GetType()),
+		},
+	}
+
+	extensions := []*gnmi_ext.Extension{{Ext: &ext101Version}, {Ext: &ext102Type}}
+
 	setRequest := &gnmi.SetRequest{
-		Update: updatedPaths,
+		Update:    updatedPaths,
+		Extension: extensions,
 	}
 	return setRequest
 }
