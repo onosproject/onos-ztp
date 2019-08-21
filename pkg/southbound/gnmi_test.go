@@ -50,8 +50,7 @@ func Test_Provision(t *testing.T) {
 		&proto.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "true"},
 	)
 
-	d := device.Device{ID: "foo", Version: "leaf"}
-
+	d := device.Device{ID: "foo", Version: "leaf", Type: "bar"}
 	err := gnmiTask.Provision(&d, &role)
 	assert.NilError(t, err, "unable to provision device")
 }
@@ -76,8 +75,7 @@ func Test_BadProvision(t *testing.T) {
 		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
 	}
 
-	d := device.Device{ID: "foo", Version: "leaf"}
-
+	d := device.Device{ID: "foo", Version: "leaf", Type: "bar"}
 	err := gnmiTask.Provision(&d, &role)
 	assert.Error(t, err, "io: read/write on closed pipe")
 }
@@ -99,7 +97,8 @@ func Test_Types(t *testing.T) {
 		&proto.DeviceProperty{Path: "/foo/float", Type: "float_val", Value: "123567890.655431"},
 		&proto.DeviceProperty{Path: "/foo/huh", Type: "wut", Value: "123567890.655431"},
 	)
-	v := makeSetRequest(&role)
+	d := device.Device{ID: "foo", Version: "leaf", Type: "bar"}
+	v := makeSetRequest(&d, &role)
 	assert.Equal(t, len(v.Update), 6, "wrong number of properties")
 }
 
@@ -118,6 +117,7 @@ func Test_BadTypes(t *testing.T) {
 		&proto.DeviceProperty{Path: "/foo/uint", Type: "uint_val", Value: "%123"},
 		&proto.DeviceProperty{Path: "/foo/float", Type: "float_val", Value: "1|390.65x"},
 	)
-	v := makeSetRequest(&role)
+	d := device.Device{ID: "foo", Version: "leaf", Type: "bar"}
+	v := makeSetRequest(&d, &role)
 	assert.Equal(t, len(v.Update), 0, "no properties expected")
 }

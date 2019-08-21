@@ -61,7 +61,7 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 			}
 			if err != nil {
 				log.Error("Unable to receive device event", err)
-			} else if event.Type == device.ListResponse_ADDED {
+			} else if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
 				log.Infof("Detected new device %s", event.Device.GetID())
 				deviceEvents <- event.Device
 			}
