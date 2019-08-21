@@ -15,13 +15,28 @@
 package southbound
 
 import (
+	"github.com/golang/mock/gomock"
 	"github.com/onosproject/onos-topo/pkg/northbound/device"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/pkg/southbound/mock"
+	"github.com/openconfig/gnmi/proto/gnmi"
+	"github.com/openconfig/gnmi/proto/gnmi_ext"
 	"gotest.tools/assert"
+	"io"
 	"testing"
 )
 
-func Test_MakeRequest(t *testing.T) {
+func Test_Provision(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	client := mock.NewMockGNMIClient(ctrl)
+	gnmiTask := GNMIProvisioner{}
+	gnmiTask.gnmi = client
+
+	client.EXPECT().Set(gomock.Any(), gomock.Any()).
+		Return(&gnmi.SetResponse{Extension: []*gnmi_ext.Extension{}}, nil)
+
 	role := proto.DeviceRoleConfig{
 		Role: "leaf",
 		Config: &proto.DeviceConfig{
@@ -50,7 +65,32 @@ func Test_MakeRequest(t *testing.T) {
 
 	d := device.Device{ID: "foo", Version: "leaf"}
 
-	gnmi := GNMIProvisioner{}
-	err := gnmi.Provision(&d, &role)
+	err := gnmiTask.Provision(&d, &role)
 	assert.NilError(t, err, "unable to provision device")
+}
+
+func Test_BadProvision(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	client := mock.NewMockGNMIClient(ctrl)
+	gnmiTask := GNMIProvisioner{}
+	gnmiTask.gnmi = client
+
+	client.EXPECT().Set(gomock.Any(), gomock.Any()).
+		Return(nil, io.ErrClosedPipe)
+
+	role := proto.DeviceRoleConfig{
+		Role: "leaf",
+		Config: &proto.DeviceConfig{
+			SoftwareVersion: "2019.08.02.c0ffee",
+			Properties:      nil,
+		},
+		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+	}
+
+	d := device.Device{ID: "foo", Version: "leaf"}
+
+	err := gnmiTask.Provision(&d, &role)
+	assert.Error(t, err, "io: read/write on closed pipe")
 }

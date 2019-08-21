@@ -15,6 +15,7 @@
 package southbound
 
 import (
+	"context"
 	"github.com/onosproject/onos-config/pkg/utils"
 	"github.com/onosproject/onos-topo/pkg/northbound/device"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
@@ -47,7 +48,13 @@ func (p *GNMIProvisioner) Init(opts ...grpc.DialOption) error {
 // Provision runs the gNMI provisioning task
 func (p *GNMIProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfig) error {
 	// TODO: implement this fully
-	_ = makeSetRequest(cfg)
+	request := makeSetRequest(cfg)
+	response, err := p.gnmi.Set(context.Background(), request)
+	if err != nil {
+		log.Errorf("Unable to apply device configuration to %s", d.GetID())
+		return err
+	}
+	log.Infof("Applied gNMI configuration to device %s; %v", d.GetID(), response)
 	return nil
 }
 

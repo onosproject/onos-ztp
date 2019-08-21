@@ -35,12 +35,15 @@ type DeviceProvisioner struct {
 
 func (p *DeviceProvisioner) Start(devices chan *device.Device) {
 	go func() {
+		log.Info("Ready to provision devices")
 		for {
 			d := <-devices
 			if d != nil {
 				cfg, err := p.Store.ReadRole(string(d.GetRole()))
 				if err == nil {
 					p.provisionDevice(d, cfg)
+				} else {
+					log.Errorf("Unable to find role %s", d.GetRole())
 				}
 			}
 		}
