@@ -46,21 +46,8 @@ func Test_Provision(t *testing.T) {
 		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
 	}
 	role.GetConfig().Properties = append(role.GetConfig().Properties,
-		&proto.DeviceProperty{
-			Path:  "/foo/bar",
-			Type:  "string_val",
-			Value: "totally fubar",
-		},
-		&proto.DeviceProperty{
-			Path:  "/foo/enabled",
-			Type:  "bool_val",
-			Value: "true",
-		},
-		&proto.DeviceProperty{
-			Path:  "/foo/something",
-			Type:  "int_val",
-			Value: "123",
-		},
+		&proto.DeviceProperty{Path: "/foo/string", Type: "string_val", Value: "totally fubar"},
+		&proto.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "true"},
 	)
 
 	d := device.Device{ID: "foo", Version: "leaf"}
@@ -93,4 +80,44 @@ func Test_BadProvision(t *testing.T) {
 
 	err := gnmiTask.Provision(&d, &role)
 	assert.Error(t, err, "io: read/write on closed pipe")
+}
+
+func Test_Types(t *testing.T) {
+	role := proto.DeviceRoleConfig{
+		Role: "leaf",
+		Config: &proto.DeviceConfig{
+			SoftwareVersion: "2019.08.02.c0ffee",
+			Properties:      nil,
+		},
+		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+	}
+	role.GetConfig().Properties = append(role.GetConfig().Properties,
+		&proto.DeviceProperty{Path: "/foo/string", Type: "string_val", Value: "totally fubar"},
+		&proto.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "true"},
+		&proto.DeviceProperty{Path: "/foo/int", Type: "int_val", Value: "-123"},
+		&proto.DeviceProperty{Path: "/foo/uint", Type: "uint_val", Value: "123"},
+		&proto.DeviceProperty{Path: "/foo/float", Type: "float_val", Value: "123567890.655431"},
+		&proto.DeviceProperty{Path: "/foo/huh", Type: "wut", Value: "123567890.655431"},
+	)
+	v := makeSetRequest(&role)
+	assert.Equal(t, len(v.Update), 6, "wrong number of properties")
+}
+
+func Test_BadTypes(t *testing.T) {
+	role := proto.DeviceRoleConfig{
+		Role: "leaf",
+		Config: &proto.DeviceConfig{
+			SoftwareVersion: "2019.08.02.c0ffee",
+			Properties:      nil,
+		},
+		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+	}
+	role.GetConfig().Properties = append(role.GetConfig().Properties,
+		&proto.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "x"},
+		&proto.DeviceProperty{Path: "/foo/int", Type: "int_val", Value: "!123"},
+		&proto.DeviceProperty{Path: "/foo/uint", Type: "uint_val", Value: "%123"},
+		&proto.DeviceProperty{Path: "/foo/float", Type: "float_val", Value: "1|390.65x"},
+	)
+	v := makeSetRequest(&role)
+	assert.Equal(t, len(v.Update), 0, "no properties expected")
 }

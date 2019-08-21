@@ -22,7 +22,7 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 	"google.golang.org/grpc"
 	log "k8s.io/klog"
-	"strings"
+	"strconv"
 )
 
 const (
@@ -59,19 +59,22 @@ func (p *GNMIProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfi
 }
 
 func makeSetRequest(config *proto.DeviceRoleConfig) *gnmi.SetRequest {
-	updatedPaths := make([]*gnmi.Update, len(config.Config.Properties))
-	for _, property := range config.Config.Properties {
-
-		path, _ := utils.ParseGNMIElements([]string{property.Path})
-
-		updatedPaths = append(updatedPaths,
-			&gnmi.Update{
-				Path: &gnmi.Path{
-					Elem:   path.GetElem(),
-					Target: path.GetTarget(),
-				},
-				Val: parseVal(*property),
-			})
+	updatedPaths := make([]*gnmi.Update, 0)
+	for _, prop := range config.Config.Properties {
+		path, _ := utils.ParseGNMIElements([]string{prop.Path})
+		value, err := parseVal(*prop)
+		if err != nil {
+			log.Errorf("Unable to convert property %s to type %s using value [%s]", prop.Path, prop.Type, prop.Value)
+		} else {
+			updatedPaths = append(updatedPaths,
+				&gnmi.Update{
+					Path: &gnmi.Path{
+						Elem:   path.GetElem(),
+						Target: path.GetTarget(),
+					},
+					Val: value,
+				})
+		}
 	}
 
 	setRequest := &gnmi.SetRequest{
@@ -80,20 +83,34 @@ func makeSetRequest(config *proto.DeviceRoleConfig) *gnmi.SetRequest {
 	return setRequest
 }
 
-func parseVal(prop proto.DeviceProperty) *gnmi.TypedValue {
+func parseVal(prop proto.DeviceProperty) (*gnmi.TypedValue, error) {
+	err := strconv.ErrSyntax
 	switch prop.Type {
-	//TODO: support other types of values
 	case "string_val":
-		return &gnmi.TypedValue{
-			Value: &gnmi.TypedValue_StringVal{StringVal: prop.Value},
-		}
+		return &gnmi.TypedValue{Value: &gnmi.TypedValue_StringVal{StringVal: prop.Value}}, nil
 	case "bool_val":
-		return &gnmi.TypedValue{
-			Value: &gnmi.TypedValue_BoolVal{BoolVal: strings.ToLower(prop.Value) == "true"},
+		b, err := strconv.ParseBool(prop.Value)
+		if err == nil {
+			return &gnmi.TypedValue{Value: &gnmi.TypedValue_BoolVal{BoolVal: b}}, nil
 		}
+	case "int_val":
+		i, err := strconv.ParseInt(prop.Value, 10, 64)
+		if err == nil {
+			return &gnmi.TypedValue{Value: &gnmi.TypedValue_IntVal{IntVal: i}}, nil
+		}
+	case "uint_val":
+		i, err := strconv.ParseUint(prop.Value, 10, 64)
+		if err == nil {
+			return &gnmi.TypedValue{Value: &gnmi.TypedValue_UintVal{UintVal: i}}, nil
+		}
+	case "float_val":
+		f, err := strconv.ParseFloat(prop.Value, 32)
+		if err == nil {
+			return &gnmi.TypedValue{Value: &gnmi.TypedValue_FloatVal{FloatVal: float32(f)}}, nil
+		}
+	// TODO: add case "decimal_val":
 	default:
-		return &gnmi.TypedValue{
-			Value: &gnmi.TypedValue_StringVal{StringVal: ""},
-		}
+		return &gnmi.TypedValue{Value: &gnmi.TypedValue_StringVal{StringVal: prop.Value}}, nil
 	}
+	return nil, err
 }
