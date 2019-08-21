@@ -69,7 +69,7 @@ func makeSetRequest(d *device.Device, config *proto.DeviceRoleConfig) *gnmi.SetR
 		if err != nil {
 			log.Errorf("Unable to convert property %s to type %s using value [%s]", prop.Path, prop.Type, prop.Value)
 		} else {
-			path, _ := utils.ParseGNMIElements([]string{prop.Path})
+			path, _ := utils.ParseGNMIElements(utils.SplitPath(prop.Path))
 			updatedPaths = append(updatedPaths,
 				&gnmi.Update{
 					Path: &gnmi.Path{
