@@ -1,0 +1,21 @@
+{
+    "role": "leaf",
+    "config": {
+        "softwareVersion": "1.0.0",
+        "properties": [
+            {
+                "path": "/interfaces/interface[name=1/0]/config/name",
+                "type": "string_val",
+                "value": "1/0"
+            },
+            {
+                "path": "/interfaces/interface[name=1/0]/config/description",
+                "type": "string_val",
+                "value": "One-Slash-Zero"
+            }
+        ]
+    },
+    "pipeline": {
+        "pipeline": "complex"
+    }
+}
