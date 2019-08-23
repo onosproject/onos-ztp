@@ -1,1 +1,21 @@
-{"role":"leaf","config":{"softwareVersion":"2019.08.02.c0ffee","properties":[{"path":"/foo/bar","type":"string_val","value":"totally fubar"}]},"pipeline":{"pipeline":"complex"}}
+{
+    "role": "leaf",
+    "config": {
+        "softwareVersion": "1.0.0",
+        "properties": [
+            {
+                "path": "/interfaces/interface[name=2/0]/config/health-indicator",
+                "type": "string_val",
+                "value": "BAD"
+            },
+            {
+                "path": "/interfaces/interface[name=1/0]/config/health-indicator",
+                "type": "string_val",
+                "value": "GOOD"
+            }
+        ]
+    },
+    "pipeline": {
+        "pipeline": "complex"
+    }
+}
