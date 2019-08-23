@@ -27,6 +27,7 @@ import (
 // DeviceMonitor is responsible for monitoring topology for new device events.
 type DeviceMonitor struct {
 	client device.DeviceServiceClient
+	events *chan *device.Device
 }
 
 const (
@@ -49,6 +50,7 @@ func (m *DeviceMonitor) Init(dialOptions ...grpc.DialOption) error {
 
 // Start kicks off the device monitor listening for the topology device add events.
 func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
+	m.events = &deviceEvents
 	topoEvents, err := m.client.List(context.Background(), &device.ListRequest{
 		Subscribe: true,
 	})
@@ -57,7 +59,6 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 	}
 
 	go func() {
-		defer close(deviceEvents)
 		log.Info("Listening for device events")
 		for {
 			event, err := topoEvents.Recv()
@@ -73,6 +74,11 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 		}
 	}()
 	return nil
+}
+
+// Stop stops the device monitor and associated resources
+func (m *DeviceMonitor) Stop() {
+	defer close(*m.events)
 }
 
 func queueDevice(devices chan *device.Device, d *device.Device) {
