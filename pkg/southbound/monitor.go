@@ -21,6 +21,7 @@ import (
 	"google.golang.org/grpc"
 	"io"
 	log "k8s.io/klog"
+	"time"
 )
 
 // DeviceMonitor is responsible for monitoring topology for new device events.
@@ -63,9 +64,19 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 				log.Error("Unable to receive device event", err)
 			} else if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
 				log.Infof("Detected new device %s", event.Device.GetID())
-				deviceEvents <- event.Device
+				queueDevice(deviceEvents, event.Device)
 			}
 		}
 	}()
 	return nil
+}
+
+func queueDevice(devices chan *device.Device, d *device.Device) {
+	// HACK:  Induce 10 second delay before delivering the event onto the channel
+	t := time.NewTimer(10 * time.Second)
+	go func() {
+		<-t.C
+		log.Infof("Queueing event new device %d", d.GetID())
+		devices <- d
+	}()
 }
