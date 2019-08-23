@@ -6,7 +6,7 @@
             {
                 "path": "/interfaces/interface[name=2/0]/config/health-indicator",
                 "type": "string_val",
-                "value": "GOOD""
+                "value": "GOOD"
             },
             {
                 "path": "/interfaces/interface[name=1/0]/config/health-indicator",
