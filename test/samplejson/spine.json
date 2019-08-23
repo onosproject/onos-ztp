@@ -1,1 +1,21 @@
-{"role":"spine","config":{"softwareVersion":"2019.08.06.1ea","properties":[{"path":"/spine/weak","type":"bool_val","value":"false"}]},"pipeline":{"pipeline":"simple"}}
+{
+    "role": "spine",
+    "config": {
+        "softwareVersion": "1.0.0",
+        "properties": [
+            {
+                "path": "/interfaces/interface[name=2/0]/config/health-indicator",
+                "type": "string_val",
+                "value": "GOOD""
+            },
+            {
+                "path": "/interfaces/interface[name=1/0]/config/health-indicator",
+                "type": "string_val",
+                "value": "BAD"
+            }
+        ]
+    },
+    "pipeline": {
+        "pipeline": "complex"
+    }
+}
