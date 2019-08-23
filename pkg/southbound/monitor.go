@@ -33,10 +33,14 @@ const (
 	topoAddress = "onos-topo:5150"
 )
 
+var (
+	dispatchDelay = 10 * time.Second
+)
+
 func (m *DeviceMonitor) Init(dialOptions ...grpc.DialOption) error {
 	conn, err := grpc.Dial(topoAddress, dialOptions...)
 	if err != nil {
-		log.Error("Unable to connect to topology server", err)
+		log.Error("Unable to connect to topology server: ", err)
 		return err
 	}
 	m.client = device.NewDeviceServiceClient(conn)
@@ -61,7 +65,7 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 				break
 			}
 			if err != nil {
-				log.Error("Unable to receive device event", err)
+				log.Error("Unable to receive device event: ", err)
 			} else if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
 				log.Infof("Detected new device %s", event.Device.GetID())
 				queueDevice(deviceEvents, event.Device)
@@ -73,10 +77,10 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 
 func queueDevice(devices chan *device.Device, d *device.Device) {
 	// HACK:  Induce 10 second delay before delivering the event onto the channel
-	t := time.NewTimer(10 * time.Second)
+	t := time.NewTimer(dispatchDelay)
 	go func() {
 		<-t.C
-		log.Infof("Queueing event new device %d", d.GetID())
+		log.Infof("Queueing event new device %s", d.GetID())
 		devices <- d
 	}()
 }
