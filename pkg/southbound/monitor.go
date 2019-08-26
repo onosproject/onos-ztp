@@ -38,6 +38,7 @@ var (
 	dispatchDelay = 10 * time.Second
 )
 
+// Init initializes the connection to the topo server
 func (m *DeviceMonitor) Init(dialOptions ...grpc.DialOption) error {
 	conn, err := grpc.Dial(topoAddress, dialOptions...)
 	if err != nil {

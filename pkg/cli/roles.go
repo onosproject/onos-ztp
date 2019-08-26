@@ -27,6 +27,7 @@ import (
 	"time"
 )
 
+// DefaultRoleStorePath :
 const DefaultRoleStorePath = "stores"
 
 func getGetRolesCommand() *cobra.Command {

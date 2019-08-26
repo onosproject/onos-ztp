@@ -31,6 +31,7 @@ var (
 	// Opts is a set of gRPC connection options
 	Opts []grpc.DialOption
 
+	// DbPath is the file system path to the database
 	DbPath = "/tmp/rolesdb"
 )
 
