@@ -33,6 +33,7 @@ type DeviceProvisioner struct {
 	Store *store.RoleStore
 }
 
+// Start starts the provisioner
 func (p *DeviceProvisioner) Start(devices chan *device.Device) {
 	go func() {
 		log.Info("Ready to provision devices")

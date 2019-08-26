@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package service implements the gRPC service for the zero-touch provisioning subsystem.
+// Package roles :
 package roles
 
 import (
