@@ -35,7 +35,7 @@ const (
 )
 
 var (
-	dispatchDelay = 10 * time.Second
+	dispatchDelay = 5 * time.Second
 )
 
 // Init initializes the connection to the topo server
