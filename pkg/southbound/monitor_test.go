@@ -41,11 +41,19 @@ func Test_Basics(t *testing.T) {
 			},
 		}, nil)
 	stream.EXPECT().Recv().
+		Return(&device.ListResponse{
+			Type: device.ListResponse_UPDATED,
+			Device: &device.Device{
+				ID: "barfoo",
+			},
+		}, nil)
+	stream.EXPECT().Recv().
 		Return(nil, io.ErrClosedPipe)
 	stream.EXPECT().Recv().
 		Return(nil, io.EOF)
 
-	dispatchDelay = 1 * time.Microsecond
+	dispatchAddDelay = 1 * time.Microsecond
+	dispatchUpdateDelay = 1 * time.Microsecond
 	monitor := DeviceMonitor{m, nil}
 	ch := make(chan *device.Device)
 	err := monitor.Start(ch)
@@ -53,6 +61,8 @@ func Test_Basics(t *testing.T) {
 
 	dev := <-ch
 	assert.Assert(t, dev.GetID() == "foobar", "incorrect device")
+	dev = <-ch
+	assert.Assert(t, dev.GetID() == "barfoo", "incorrect device")
 
 	time.Sleep(100 * time.Millisecond)
 	monitor.Stop()
