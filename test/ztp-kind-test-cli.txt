@@ -1,0 +1,21 @@
+# Create the roles
+onos ztp add role /tmp/peer.json
+onos ztp add role /tmp/spine.json
+onos ztp add role /tmp/leaf.json
+
+# Add our leaf devices, but as peers
+onos topo add device wedge1 --address 10.128.13.221:28000 --type Stratum --version 1.0.0 --plain --insecure --role peer
+onos topo add device wedge2 --address 10.128.13.222:28000 --type Stratum --version 1.0.0 --plain --insecure --role peer
+
+
+# Add our spine
+onos topo add device wedge3 --address 10.128.13.223:28000 --type Stratum --version 1.0.0 --plain --insecure --role spine
+
+
+# Change or leaves into proper leaves
+onos topo add device wedge1 --address 10.128.13.221:28000 --type Stratum --version 1.0.0 --plain --insecure --role leaf
+onos topo add device wedge2 --address 10.128.13.222:28000 --type Stratum --version 1.0.0 --plain --insecure --role leaf
+
+
+# TODO: fix ZTP to also react to 'update device' messages.
+
