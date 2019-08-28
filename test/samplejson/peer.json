@@ -1,27 +1,27 @@
 {
-    "role": "leaf",
+    "role": "peer",
     "config": {
         "softwareVersion": "1.0.0",
         "properties": [
             {
                 "path": "/interfaces/interface[name=1/0]/config/health-indicator",
                 "type": "string_val",
-                "value": "GOOD"
+                "value": "BAD"
             },
             {
                 "path": "/interfaces/interface[name=1/0]/config/enabled",
                 "type": "bool_val",
-                "value": "true"
+                "value": "false"
             },
             {
                 "path": "/interfaces/interface[name=2/0]/config/health-indicator",
                 "type": "string_val",
-                "value": "BAD"
+                "value": "GOOD"
             },
             {
                 "path": "/interfaces/interface[name=2/0]/config/enabled",
                 "type": "bool_val",
-                "value": "false"
+                "value": "true"
             },
             {
                 "path": "/interfaces/interface[name=3/0]/config/health-indicator",

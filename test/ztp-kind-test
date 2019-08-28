@@ -1,0 +1,11 @@
+#!/bin/bash
+shopt -s expand_aliases
+source $GOPATH/src/github.com/onosproject/onos-config/build/bash_aliases
+
+onit delete cluster
+onit create cluster
+okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/peer.json $(okpid cli):/tmp
+okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/spine.json $(okpid cli):/tmp
+okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/leaf.json $(okpid cli):/tmp
+onit add app --image onosproject/onos-ztp:latest onos-ztp
+onit onos-cli
