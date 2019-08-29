@@ -3,5 +3,5 @@ shopt -s expand_aliases
 source $GOPATH/src/github.com/onosproject/onos-config/build/bash_aliases
 
 # Add our leaf devices, but as peers
-ocli onos topo update device wedge1 --address 10.128.13.221:28000 --type Stratum --version 1.0.0 --plain --insecure --role ${1:peer}
-ocli onos topo update device wedge2 --address 10.128.13.222:28000 --type Stratum --version 1.0.0 --plain --insecure --role ${1:peer}
+ocli onos topo update device wedge1 --role ${1:peer}
+ocli onos topo update device wedge2 --role ${1:peer}

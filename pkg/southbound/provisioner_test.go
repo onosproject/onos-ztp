@@ -66,7 +66,7 @@ func (t *TestProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfi
 }
 
 func Test_NormalEvent(t *testing.T) {
-	task := TestProvisioner{wg: &sync.WaitGroup{}}
+	task := TestProvisioner{wg: &sync.WaitGroup{}, fail: false}
 	task.wg.Add(1)
 	repo := setupRepo(t, "/tmp/roledb/p1")
 	p := DeviceProvisioner{Tasks: []ProvisionerTask{&task}, Store: &repo}

@@ -30,7 +30,7 @@ type PipelineProvisioner struct {
 }
 
 const (
-	template = `{"device:%s": {"basic": {"managementAddress":"grpc://%s?device_id=1","driver":"%s","pipeconf":"%s"}}}`
+	template = `{"device:%s": {"basic": {"managementAddress":"grpc://%s?device_id=1","driver":"%s","pipeconf":"%s","locType":"grid","gridX":%s,"gridY":%s}}}`
 	// onosAddress = "10.128.100.91:8181"
 	onosAddress = "10.1.10.19:8181"
 )
@@ -42,7 +42,9 @@ func (p *PipelineProvisioner) Init(opts ...grpc.DialOption) error {
 
 // Provision runs the pipeline provisioning task
 func (p *PipelineProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfig) error {
-	cfgString := fmt.Sprintf(template, d.GetID(), d.GetAddress(), cfg.GetPipeline().GetDriver(), cfg.GetPipeline().GetPipeconf())
+	attrs := d.GetAttributes()
+	ctl := cfg.GetPipeline()
+	cfgString := fmt.Sprintf(template, d.GetID(), d.GetAddress(), ctl.GetDriver(), ctl.GetPipeconf(), attrs["x"], attrs["y"])
 	url := fmt.Sprintf("http://%s/onos/v1/network/configuration/devices", onosAddress)
 	log.Infof("Applying pipeline configuration %s to device %s", cfgString, d.GetID())
 

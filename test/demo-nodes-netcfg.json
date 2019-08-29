@@ -1,0 +1,18 @@
+{
+  "hosts" : {
+    "0C:C4:7A:19:6D:CA/None" : {
+      "basic" : {
+        "gridX" : 750.0,
+        "gridY" : 550.0,
+        "locType" : "grid"
+      }
+    },
+    "0C:C4:7A:19:6D:CB/None" : {
+      "basic" : {
+        "gridX" : 250.0,
+        "gridY" : 550.0,
+        "locType" : "grid"
+      }
+    }
+  }
+}
