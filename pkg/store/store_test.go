@@ -58,7 +58,7 @@ func Test_Basics(t *testing.T) {
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
 	}
 	role.GetConfig().Properties = append(role.GetConfig().Properties, &proto.DeviceProperty{
 		Path:  "/foo/bar",
@@ -76,13 +76,13 @@ func Test_Basics(t *testing.T) {
 	rr, err := db.ReadRole("leaf")
 	assert.NilError(t, err)
 	assert.Assert(t, rr.Role == "leaf", "got wrong role")
-	assert.Assert(t, rr.Pipeline.Pipeline == "simple", "got wrong pipeline")
+	assert.Assert(t, rr.Pipeline.Pipeconf == "simple", "got wrong pipeline")
 	assert.Assert(t, len(rr.Config.Properties) == 1, "got wrong config")
 
 	dr, err := db.DeleteRole("leaf")
 	assert.NilError(t, err)
 	assert.Assert(t, dr.Role == "leaf", "got wrong role")
-	assert.Assert(t, dr.Pipeline.Pipeline == "simple", "got wrong pipeline")
+	assert.Assert(t, dr.Pipeline.Pipeconf == "simple", "got wrong pipeline")
 
 	noroles, err := db.ListRoles()
 	assert.NilError(t, err)

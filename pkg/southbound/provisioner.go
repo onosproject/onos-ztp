@@ -57,7 +57,6 @@ func (p *DeviceProvisioner) provisionDevice(d *device.Device, cfg *proto.DeviceR
 		err := t.Provision(d, cfg)
 		if err != nil {
 			log.Errorf("Unable to provision %s due to %v", d.GetID(), err)
-			return
 		}
 	}
 }

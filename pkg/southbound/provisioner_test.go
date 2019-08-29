@@ -43,7 +43,7 @@ func setupRepo(t *testing.T, path string) store.RoleStore {
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
 	}
 	err = store.WriteRole(&role, true)
 	assert.NilError(t, err, "Unable to create test role")
@@ -66,7 +66,7 @@ func (t *TestProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfi
 }
 
 func Test_NormalEvent(t *testing.T) {
-	task := TestProvisioner{wg: &sync.WaitGroup{}}
+	task := TestProvisioner{wg: &sync.WaitGroup{}, fail: false}
 	task.wg.Add(1)
 	repo := setupRepo(t, "/tmp/roledb/p1")
 	p := DeviceProvisioner{Tasks: []ProvisionerTask{&task}, Store: &repo}

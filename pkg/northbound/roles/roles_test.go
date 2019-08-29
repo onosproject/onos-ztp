@@ -34,7 +34,7 @@ var (
 			SoftwareVersion: "2019.08.06.1ea",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
 	}
 	leafRole = proto.DeviceRoleConfig{
 		Role: "leaf",
@@ -42,7 +42,7 @@ var (
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeline: "complex"},
+		Pipeline: &proto.DevicePipeline{Pipeconf: "complex"},
 	}
 )
 

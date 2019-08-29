@@ -1,0 +1,16 @@
+#!/bin/bash
+shopt -s expand_aliases
+source $GOPATH/src/github.com/onosproject/onos-config/build/bash_aliases
+
+# Re-create the cluster
+onit delete cluster
+onit create cluster
+
+# Load the ZTP app
+onit add app --image onosproject/onos-ztp:latest onos-ztp
+
+# Add roles
+for r in none leaf spine peer; do
+  okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/$r.json $(okpid cli):/tmp
+  ocli onos ztp add role /tmp/$r.json
+done
