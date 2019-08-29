@@ -2,19 +2,12 @@
 shopt -s expand_aliases
 source $GOPATH/src/github.com/onosproject/onos-config/build/bash_aliases
 
-for r in $(ocli onos ztp get roles | tr '\r\n' ' '); do
-  ocli onos ztp remove role $r
-done
-
 # Stage some files on the onos-cli node for creating roles, etc.
-okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/peer.json $(okpid cli):/tmp
-okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/spine.json $(okpid cli):/tmp
-okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/leaf.json $(okpid cli):/tmp
-
-ocli onos ztp add role /tmp/peer.json
-ocli onos ztp add role /tmp/spine.json
-ocli onos ztp add role /tmp/leaf.json
-
-for r in $(ocli onos ztp get roles | tr '\r\n' ' '); do
+for r in none peer spine leaf; do
+  echo "$r:"
+  okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/$r.json $(okpid cli):/tmp
+  ocli onos ztp remove role $r 2>/dev/null
+  ocli onos ztp add role /tmp/$r.json
   ocli onos ztp get role $r
+  echo ""
 done
