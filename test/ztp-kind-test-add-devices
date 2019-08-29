@@ -2,27 +2,24 @@
 shopt -s expand_aliases
 source $GOPATH/src/github.com/onosproject/onos-config/build/bash_aliases
 
-# Re-create the cluster
-onit delete cluster
-onit create cluster
+ocli onos topo remove device wedge1
+ocli onos topo remove device wedge2
+ocli onos topo remove device wedge3
 
-# Load the ZTP app
-onit add app --image onosproject/onos-ztp:latest onos-ztp
-
-# Add roles
-for r in none leaf spine peer; do
-  okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/$r.json $(okpid cli):/tmp
-  ocli onos ztp add role /tmp/$r.json
-done
+echo "Press enter to add and provision leaf devices as peers..."
+read foo
 
 # Add our leaf devices, but as peers
 ocli onos topo add device wedge1 --address 10.128.13.221:28000 --type Stratum --version 1.0.0 --plain --insecure --role peer
 ocli onos topo add device wedge2 --address 10.128.13.222:28000 --type Stratum --version 1.0.0 --plain --insecure --role peer
 
+echo "Press enter to add and provision spine device..."
+read foo
+
 # Add our spine
 ocli onos topo add device wedge3 --address 10.128.13.223:28000 --type Stratum --version 1.0.0 --plain --insecure --role spine
 
-echo "Press enter to switch peers to leaves..."
+echo "Press enter to switch leaf devices peers to true leaves..."
 read foo
 
 # Change leaves into proper leaves
