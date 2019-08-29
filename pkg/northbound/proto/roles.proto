@@ -40,7 +40,8 @@ message DeviceProperty {
 
 // DevicePipeline carries information about the P4 pipeline configuration
 message DevicePipeline {
-    string pipeline = 1;
+    string pipeconf = 1;
+    string driver = 2;
 }
 
 // DeviceRoleChange is an event describing a change to a device role configuration.

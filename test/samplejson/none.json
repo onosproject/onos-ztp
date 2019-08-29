@@ -1,32 +1,32 @@
 {
-    "role": "spine",
+    "role": "none",
     "config": {
         "softwareVersion": "1.0.0",
         "properties": [
             {
                 "path": "/interfaces/interface[name=1/0]/config/health-indicator",
                 "type": "string_val",
-                "value": "GOOD"
+                "value": "BAD"
             },
             {
                 "path": "/interfaces/interface[name=1/0]/config/enabled",
                 "type": "bool_val",
-                "value": "true"
+                "value": "false"
             },
             {
                 "path": "/interfaces/interface[name=2/0]/config/health-indicator",
                 "type": "string_val",
-                "value": "GOOD"
+                "value": "BAD"
             },
             {
                 "path": "/interfaces/interface[name=2/0]/config/enabled",
                 "type": "bool_val",
-                "value": "true"
+                "value": "false"
             }
         ]
     },
     "pipeline": {
-        "pipeconf": "org.onosproject.pipelines.fabric-simple.montara",
+        "pipeconf": "org.onosproject.pipelines.basic",
         "driver": "stratum-tofino"
     }
 }

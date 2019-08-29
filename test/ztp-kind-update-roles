@@ -1,0 +1,15 @@
+#!/bin/bash
+shopt -s expand_aliases
+source $GOPATH/src/github.com/onosproject/onos-config/build/bash_aliases
+
+for r in $(ocli onos ztp get roles | tr '\r\n' ' '); do
+  ocli onos ztp remove role $r
+done
+
+# Stage some files on the onos-cli node for creating roles, etc.
+for r in none peer spine leaf; do
+  echo $r:
+  okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/$r.json $(okpid cli):/tmp
+  ocli onos ztp add role /tmp/peer.json
+  ocli onos ztp get role $r
+done

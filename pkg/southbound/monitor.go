@@ -35,7 +35,8 @@ const (
 )
 
 var (
-	dispatchDelay = 5 * time.Second
+	dispatchAddDelay    = 5 * time.Second
+	dispatchUpdateDelay = 1 * time.Second
 )
 
 // Init initializes the connection to the topo server
@@ -69,8 +70,8 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 			if err != nil {
 				log.Error("Unable to receive device event: ", err)
 			} else if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
-				log.Infof("Detected new device %s", event.Device.GetID())
-				queueDevice(deviceEvents, event.Device)
+				log.Infof("Detected addition or update of device %s", event.Device.GetID())
+				queueDevice(deviceEvents, event.Device, event.Type == device.ListResponse_UPDATED)
 			}
 		}
 	}()
@@ -82,9 +83,14 @@ func (m *DeviceMonitor) Stop() {
 	defer close(*m.events)
 }
 
-func queueDevice(devices chan *device.Device, d *device.Device) {
-	// HACK:  Induce 10 second delay before delivering the event onto the channel
-	t := time.NewTimer(dispatchDelay)
+func queueDevice(devices chan *device.Device, d *device.Device, updated bool) {
+	// HACK:  Induce delay before delivering the event onto the channel
+	var t *time.Timer
+	if updated {
+		t = time.NewTimer(dispatchUpdateDelay)
+	} else {
+		t = time.NewTimer(dispatchAddDelay)
+	}
 	go func() {
 		<-t.C
 		log.Infof("Queueing event new device %s", d.GetID())

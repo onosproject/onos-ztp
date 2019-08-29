@@ -36,6 +36,7 @@
         ]
     },
     "pipeline": {
-        "pipeline": "complex"
+        "driver": "stratum-tofino",
+        "pipeconf": "org.onosproject.pipelines.fabric-simple.mavericks"
     }
 }

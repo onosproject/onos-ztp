@@ -81,9 +81,15 @@ func LoadManager(roleStorePath string, opts ...grpc.DialOption) (*Manager, error
 		return nil, err
 	}
 
-	// TODO: add p4Task
+	// TODO: replace with p4Task
+	pipelineTask := southbound.PipelineProvisioner{}
+	err = pipelineTask.Init(opts...)
+	if err != nil {
+		log.Error("Unable to setup pipeline provisioner", err)
+		return nil, err
+	}
 
-	mgr.provisioner.Tasks = []southbound.ProvisionerTask{&gnmiTask}
+	mgr.provisioner.Tasks = []southbound.ProvisionerTask{&gnmiTask, &pipelineTask}
 	return mgr, err
 }
 

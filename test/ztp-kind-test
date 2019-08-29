@@ -2,10 +2,29 @@
 shopt -s expand_aliases
 source $GOPATH/src/github.com/onosproject/onos-config/build/bash_aliases
 
+# Re-create the cluster
 onit delete cluster
 onit create cluster
-okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/peer.json $(okpid cli):/tmp
-okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/spine.json $(okpid cli):/tmp
-okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/leaf.json $(okpid cli):/tmp
+
+# Load the ZTP app
 onit add app --image onosproject/onos-ztp:latest onos-ztp
-onit onos-cli
+
+# Add roles
+for r in none leaf spine peer; do
+  okctl cp $GOPATH/src/github.com/onosproject/onos-ztp/test/samplejson/$r.json $(okpid cli):/tmp
+  ocli onos ztp add role /tmp/$r.json
+done
+
+# Add our leaf devices, but as peers
+ocli onos topo add device wedge1 --address 10.128.13.221:28000 --type Stratum --version 1.0.0 --plain --insecure --role peer
+ocli onos topo add device wedge2 --address 10.128.13.222:28000 --type Stratum --version 1.0.0 --plain --insecure --role peer
+
+# Add our spine
+ocli onos topo add device wedge3 --address 10.128.13.223:28000 --type Stratum --version 1.0.0 --plain --insecure --role spine
+
+echo "Press enter to switch peers to leaves..."
+read foo
+
+# Change leaves into proper leaves
+ocli onos topo update device wedge1 --address 10.128.13.221:28000 --type Stratum --version 1.0.0 --plain --insecure --role leaf
+ocli onos topo update device wedge2 --address 10.128.13.222:28000 --type Stratum --version 1.0.0 --plain --insecure --role leaf
