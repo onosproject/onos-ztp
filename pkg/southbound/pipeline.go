@@ -30,9 +30,9 @@ type PipelineProvisioner struct {
 }
 
 const (
-	template = `{"device:%s": {"basic": {"managementAddress":"grpc://%s?device_id=1","driver":"%s","pipeconf":"%s","locType":"grid","gridX":%s,"gridY":%s}}}`
-	// onosAddress = "10.128.100.91:8181"
-	onosAddress = "10.1.10.19:8181"
+	template    = `{"device:%s": {"basic": {"managementAddress":"grpc://%s?device_id=1","driver":"%s","pipeconf":"%s","locType":"grid","gridX":%s,"gridY":%s}}}`
+	onosAddress = "10.128.100.91:8181"
+	// onosAddress = "10.1.10.19:8181"
 )
 
 // Init initializes the pipeline provisioner
