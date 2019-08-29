@@ -43,7 +43,7 @@ func Test_Provision(t *testing.T) {
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
 	}
 	role.GetConfig().Properties = append(role.GetConfig().Properties,
 		&proto.DeviceProperty{Path: "/foo/string", Type: "string_val", Value: "totally fubar"},
@@ -72,7 +72,7 @@ func Test_BadProvision(t *testing.T) {
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
 	}
 
 	d := device.Device{ID: "foo", Version: "leaf", Type: "bar"}
@@ -87,7 +87,7 @@ func Test_Types(t *testing.T) {
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
 	}
 	role.GetConfig().Properties = append(role.GetConfig().Properties,
 		&proto.DeviceProperty{Path: "/foo/string", Type: "string_val", Value: "totally fubar"},
@@ -109,7 +109,7 @@ func Test_BadTypes(t *testing.T) {
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
 	}
 	role.GetConfig().Properties = append(role.GetConfig().Properties,
 		&proto.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "x"},

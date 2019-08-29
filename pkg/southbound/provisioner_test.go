@@ -43,7 +43,7 @@ func setupRepo(t *testing.T, path string) store.RoleStore {
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeline: "simple"},
+		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
 	}
 	err = store.WriteRole(&role, true)
 	assert.NilError(t, err, "Unable to create test role")
