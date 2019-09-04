@@ -16,6 +16,7 @@ package southbound
 
 import (
 	"context"
+	"fmt"
 	ext "github.com/onosproject/onos-config/pkg/northbound/gnmi"
 	"github.com/onosproject/onos-config/pkg/utils"
 	"github.com/onosproject/onos-topo/pkg/northbound/device"
@@ -82,6 +83,13 @@ func makeSetRequest(d *device.Device, config *proto.DeviceRoleConfig) *gnmi.SetR
 		}
 	}
 
+	changeId := fmt.Sprintf("%s-%s", d.GetID(), d.GetRole())
+	ext100ChangeId := gnmi_ext.Extension_RegisteredExt{
+		RegisteredExt: &gnmi_ext.RegisteredExtension{
+			Id:  ext.GnmiExtensionNetwkChangeID,
+			Msg: []byte(changeId),
+		},
+	}
 	ext101Version := gnmi_ext.Extension_RegisteredExt{
 		RegisteredExt: &gnmi_ext.RegisteredExtension{
 			Id:  ext.GnmiExtensionVersion,
@@ -95,7 +103,7 @@ func makeSetRequest(d *device.Device, config *proto.DeviceRoleConfig) *gnmi.SetR
 		},
 	}
 
-	extensions := []*gnmi_ext.Extension{{Ext: &ext101Version}, {Ext: &ext102Type}}
+	extensions := []*gnmi_ext.Extension{{Ext: &ext100ChangeId}, {Ext: &ext101Version}, {Ext: &ext102Type}}
 
 	setRequest := &gnmi.SetRequest{
 		Update:    updatedPaths,
