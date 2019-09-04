@@ -83,11 +83,11 @@ func makeSetRequest(d *device.Device, config *proto.DeviceRoleConfig) *gnmi.SetR
 		}
 	}
 
-	changeId := fmt.Sprintf("%s-%s", d.GetID(), d.GetRole())
-	ext100ChangeId := gnmi_ext.Extension_RegisteredExt{
+	changeID := fmt.Sprintf("%s-%s", d.GetID(), d.GetRole())
+	ext100ChangeID := gnmi_ext.Extension_RegisteredExt{
 		RegisteredExt: &gnmi_ext.RegisteredExtension{
 			Id:  ext.GnmiExtensionNetwkChangeID,
-			Msg: []byte(changeId),
+			Msg: []byte(changeID),
 		},
 	}
 	ext101Version := gnmi_ext.Extension_RegisteredExt{
@@ -103,7 +103,7 @@ func makeSetRequest(d *device.Device, config *proto.DeviceRoleConfig) *gnmi.SetR
 		},
 	}
 
-	extensions := []*gnmi_ext.Extension{{Ext: &ext100ChangeId}, {Ext: &ext101Version}, {Ext: &ext102Type}}
+	extensions := []*gnmi_ext.Extension{{Ext: &ext100ChangeID}, {Ext: &ext101Version}, {Ext: &ext102Type}}
 
 	setRequest := &gnmi.SetRequest{
 		Update:    updatedPaths,
