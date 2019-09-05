@@ -98,12 +98,8 @@ func (m *Manager) Run() {
 	log.Info("Starting Manager")
 
 	// Start the device monitor and provisioner components.
-	err := m.monitor.Start(m.deviceChanel)
-	if err != nil {
-		log.Error("Unable to start device monitor", err)
-	} else {
-		m.provisioner.Start(m.deviceChanel)
-	}
+	m.monitor.Start(m.deviceChanel)
+	m.provisioner.Start(m.deviceChanel)
 }
 
 // Close kills the channels and manager related objects
