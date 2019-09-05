@@ -56,8 +56,7 @@ func Test_Basics(t *testing.T) {
 	dispatchUpdateDelay = 1 * time.Microsecond
 	monitor := DeviceMonitor{m, nil}
 	ch := make(chan *device.Device)
-	err := monitor.Start(ch)
-	assert.NilError(t, err, "unexpected error")
+	monitor.Start(ch)
 
 	dev := <-ch
 	assert.Assert(t, dev.GetID() == "foobar", "incorrect device")
@@ -79,8 +78,7 @@ func Test_ListError(t *testing.T) {
 
 	monitor := DeviceMonitor{m, nil}
 	ch := make(chan *device.Device)
-	err := monitor.Start(ch)
-	assert.Error(t, err, "unexpected EOF", "wrong error")
+	monitor.Start(ch)
 	time.Sleep(100 * time.Millisecond)
 	monitor.Stop()
 }
