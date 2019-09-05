@@ -59,10 +59,13 @@ func Test_Basics(t *testing.T) {
 	ch := make(chan *device.Device)
 	go monitor.Start(ch)
 
-	dev := <-ch
-	assert.Assert(t, dev.GetID() == "foobar", "incorrect device")
-	dev = <-ch
-	assert.Assert(t, dev.GetID() == "barfoo", "incorrect device")
+	dev1 := <-ch
+	dev2 := <-ch
+
+	// TODO: This assertion was implemented due to the non-deterministic nature of device events with the delay hack.
+	// Fix this test when the delay hack is replaced!
+	assert.Assert(t, (dev1.GetID() == "foobar" && dev2.GetID() != "foobar") || (dev2.GetID() == "foobar" && dev1.GetID() != "foobar"), "incorrect device")
+	assert.Assert(t, (dev1.GetID() == "barfoo" && dev2.GetID() != "barfoo") || (dev2.GetID() == "barfoo" && dev1.GetID() != "barfoo"), "incorrect device")
 
 	time.Sleep(100 * time.Millisecond)
 	monitor.Stop()

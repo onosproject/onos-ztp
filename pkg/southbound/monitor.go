@@ -21,7 +21,6 @@ import (
 	"github.com/cenkalti/backoff"
 	"github.com/onosproject/onos-topo/pkg/northbound/device"
 	"google.golang.org/grpc"
-	"io"
 	log "k8s.io/klog"
 	"time"
 )
@@ -85,13 +84,11 @@ func (m *DeviceMonitor) watchEvents(deviceEvents chan<- *device.Device) error {
 	log.Info("Listening for device events")
 	for {
 		event, err := topoEvents.Recv()
-		if err == io.EOF {
+		if err != nil {
 			log.Error(err)
 			return nil
 		}
-		if err != nil {
-			log.Error("Unable to receive device event: ", err)
-		} else if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
+		if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
 			log.Infof("Detected addition or update of device %s", event.Device.GetID())
 			queueDevice(deviceEvents, event.Device, event.Type == device.ListResponse_UPDATED)
 		}
