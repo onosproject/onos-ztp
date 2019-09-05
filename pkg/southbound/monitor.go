@@ -17,6 +17,8 @@ package southbound
 
 import (
 	"context"
+	"errors"
+	"github.com/cenkalti/backoff"
 	"github.com/onosproject/onos-topo/pkg/northbound/device"
 	"google.golang.org/grpc"
 	"io"
@@ -27,7 +29,7 @@ import (
 // DeviceMonitor is responsible for monitoring topology for new device events.
 type DeviceMonitor struct {
 	client device.DeviceServiceClient
-	events *chan *device.Device
+	events chan<- *device.Device
 }
 
 const (
@@ -50,9 +52,29 @@ func (m *DeviceMonitor) Init(dialOptions ...grpc.DialOption) error {
 	return nil
 }
 
-// Start kicks off the device monitor listening for the topology device add events.
-func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
-	m.events = &deviceEvents
+// Start starts listening for events from the DeviceService
+func (m *DeviceMonitor) Start(ch chan<- *device.Device) {
+	// Retry continuously to listen for devices from the device service. The root retry loop is constant, so
+	// when the device listener disconnects, a new connection will be attempted a second later. Each connection
+	// iteration is performed using an exponential backoff algorithm, ensuring the client doesn't attempt to connect
+	// to a missing service constantly.
+	_ = backoff.Retry(func() error {
+		operation := func() error {
+			return m.watchEvents(ch)
+		}
+
+		// Use exponential backoff until the client is able to list devices. This operation should never return
+		// an error since we don't use the error type required to fail the exponential backoff operation.
+		_ = backoff.Retry(operation, backoff.NewExponentialBackOff())
+
+		// Return a placeholder error to ensure the connection is retried.
+		return errors.New("retry")
+	}, backoff.NewConstantBackOff(1*time.Second))
+}
+
+// watchEvents opens a device event stream
+func (m *DeviceMonitor) watchEvents(deviceEvents chan<- *device.Device) error {
+	m.events = deviceEvents
 	topoEvents, err := m.client.List(context.Background(), &device.ListRequest{
 		Subscribe: true,
 	})
@@ -60,30 +82,28 @@ func (m *DeviceMonitor) Start(deviceEvents chan *device.Device) error {
 		return err
 	}
 
-	go func() {
-		log.Info("Listening for device events")
-		for {
-			event, err := topoEvents.Recv()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				log.Error("Unable to receive device event: ", err)
-			} else if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
-				log.Infof("Detected addition or update of device %s", event.Device.GetID())
-				queueDevice(deviceEvents, event.Device, event.Type == device.ListResponse_UPDATED)
-			}
+	log.Info("Listening for device events")
+	for {
+		event, err := topoEvents.Recv()
+		if err == io.EOF {
+			log.Error(err)
+			return nil
 		}
-	}()
-	return nil
+		if err != nil {
+			log.Error("Unable to receive device event: ", err)
+		} else if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
+			log.Infof("Detected addition or update of device %s", event.Device.GetID())
+			queueDevice(deviceEvents, event.Device, event.Type == device.ListResponse_UPDATED)
+		}
+	}
 }
 
 // Stop stops the device monitor and associated resources
 func (m *DeviceMonitor) Stop() {
-	defer close(*m.events)
+	defer close(m.events)
 }
 
-func queueDevice(devices chan *device.Device, d *device.Device, updated bool) {
+func queueDevice(devices chan<- *device.Device, d *device.Device, updated bool) {
 	// HACK:  Induce delay before delivering the event onto the channel
 	var t *time.Timer
 	if updated {

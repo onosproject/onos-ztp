@@ -50,14 +50,14 @@ func Test_Basics(t *testing.T) {
 	stream.EXPECT().Recv().
 		Return(nil, io.ErrClosedPipe)
 	stream.EXPECT().Recv().
-		Return(nil, io.EOF)
+		Return(nil, io.EOF).
+		AnyTimes()
 
 	dispatchAddDelay = 1 * time.Microsecond
 	dispatchUpdateDelay = 1 * time.Microsecond
 	monitor := DeviceMonitor{m, nil}
 	ch := make(chan *device.Device)
-	err := monitor.Start(ch)
-	assert.NilError(t, err, "unexpected error")
+	go monitor.Start(ch)
 
 	dev := <-ch
 	assert.Assert(t, dev.GetID() == "foobar", "incorrect device")
@@ -75,12 +75,12 @@ func Test_ListError(t *testing.T) {
 	m := mock.NewMockDeviceServiceClient(ctrl)
 
 	m.EXPECT().List(gomock.Any(), gomock.Any()).
-		Return(nil, io.ErrUnexpectedEOF)
+		Return(nil, io.ErrUnexpectedEOF).
+		AnyTimes()
 
 	monitor := DeviceMonitor{m, nil}
 	ch := make(chan *device.Device)
-	err := monitor.Start(ch)
-	assert.Error(t, err, "unexpected EOF", "wrong error")
+	go monitor.Start(ch)
 	time.Sleep(100 * time.Millisecond)
 	monitor.Stop()
 }

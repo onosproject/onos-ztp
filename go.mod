@@ -3,6 +3,7 @@ module github.com/onosproject/onos-ztp
 go 1.12
 
 require (
+	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/go-playground/overalls v0.0.0-20180201144345-22ec1a223b7c // indirect
 	github.com/gofrs/flock v0.7.1 // indirect
 	github.com/golang/mock v1.3.1
