@@ -11,6 +11,7 @@ require (
 	github.com/onosproject/onos-config v0.0.0-20190829172900-8d24cb86fe8a
 	github.com/onosproject/onos-topo v0.0.0-20190903221246-886e9fc1732a
 	github.com/openconfig/gnmi v0.0.0-20180912164834-33a1865c3029
+	github.com/prometheus/client_golang v0.9.4 // indirect
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.4.0
 	google.golang.org/grpc v1.22.1
