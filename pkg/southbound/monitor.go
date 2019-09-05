@@ -82,22 +82,20 @@ func (m *DeviceMonitor) watchEvents(deviceEvents chan<- *device.Device) error {
 		return err
 	}
 
-	go func() {
-		log.Info("Listening for device events")
-		for {
-			event, err := topoEvents.Recv()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				log.Error("Unable to receive device event: ", err)
-			} else if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
-				log.Infof("Detected addition or update of device %s", event.Device.GetID())
-				queueDevice(deviceEvents, event.Device, event.Type == device.ListResponse_UPDATED)
-			}
+	log.Info("Listening for device events")
+	for {
+		event, err := topoEvents.Recv()
+		if err == io.EOF {
+			log.Error(err)
+			return nil
 		}
-	}()
-	return nil
+		if err != nil {
+			log.Error("Unable to receive device event: ", err)
+		} else if event.Type == device.ListResponse_ADDED || event.Type == device.ListResponse_UPDATED {
+			log.Infof("Detected addition or update of device %s", event.Device.GetID())
+			queueDevice(deviceEvents, event.Device, event.Type == device.ListResponse_UPDATED)
+		}
+	}
 }
 
 // Stop stops the device monitor and associated resources

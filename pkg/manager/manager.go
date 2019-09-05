@@ -98,7 +98,7 @@ func (m *Manager) Run() {
 	log.Info("Starting Manager")
 
 	// Start the device monitor and provisioner components.
-	m.monitor.Start(m.deviceChanel)
+	go m.monitor.Start(m.deviceChanel)
 	m.provisioner.Start(m.deviceChanel)
 }
 
