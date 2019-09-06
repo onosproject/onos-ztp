@@ -32,7 +32,9 @@ type Service struct {
 
 // Register registers the Service with the gRPC server.
 func (s Service) Register(r *grpc.Server) {
-	proto.RegisterDeviceRoleServiceServer(r, &Server{})
+	server := &Server{}
+	go server.dispatch()
+	proto.RegisterDeviceRoleServiceServer(r, server)
 }
 
 // Server implements the gRPC service for zero-touch provisioning facilities.
@@ -63,11 +65,14 @@ func (s *Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*pr
 	switch r.GetChange() {
 	case proto.DeviceRoleChangeRequest_ADD:
 		changeType = proto.DeviceRoleChange_ADDED
+		log.Infof("Adding new role %s", cfg.GetRole())
 		err = manager.GetManager().RoleStore.WriteRole(cfg, false)
 	case proto.DeviceRoleChangeRequest_UPDATE:
+		log.Infof("Updating role %s", cfg.GetRole())
 		err = manager.GetManager().RoleStore.WriteRole(cfg, true)
 	case proto.DeviceRoleChangeRequest_DELETE:
 		changeType = proto.DeviceRoleChange_DELETED
+		log.Infof("Removing role %s", cfg.GetRole())
 		cfg, err = manager.GetManager().RoleStore.DeleteRole(cfg.Role)
 	}
 
@@ -79,6 +84,7 @@ func (s *Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*pr
 		Change: changeType,
 		Config: cfg,
 	}
+	log.Infof("Responding to request with %v", change)
 
 	// Queue up device role change for subscribers
 	manager.GetManager().ChangesChannel <- change
@@ -113,8 +119,6 @@ func (s *Server) sendRoleConfig(roleName string, stream proto.DeviceRoleService_
 
 // Subscribe provides means to monitor changes in the device role configuration.
 func (s *Server) Subscribe(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_SubscribeServer) error {
-	s.startDispatcherIfNeeded()
-
 	// Create and register a channel on which to receive notifications
 	changeChan := make(chan proto.DeviceRoleChange)
 	key := s.register(&changeChan)
@@ -133,13 +137,6 @@ func (s *Server) Subscribe(req *proto.DeviceRoleRequest, stream proto.DeviceRole
 		}
 	}
 	return nil
-}
-
-func (s *Server) startDispatcherIfNeeded() {
-	if !s.dispatcherStarted {
-		s.dispatcherStarted = true
-		go s.dispatch()
-	}
 }
 
 func (s *Server) dispatch() {
