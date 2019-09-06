@@ -20,6 +20,7 @@ import (
 	"errors"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"io/ioutil"
+	log "k8s.io/klog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -59,6 +60,7 @@ func (s *RoleStore) WriteRole(roleConfig *proto.DeviceRoleConfig, overwrite bool
 			return errors.New("Overwrite was set to false but role" + s.path(roleConfig.Role) + " already exists")
 		}
 	}
+	log.Infof("Writing record for role %s", roleConfig.GetRole())
 	return ioutil.WriteFile(s.path(roleConfig.Role), jsonBlob, 0644)
 }
 
@@ -88,6 +90,7 @@ func (s *RoleStore) DeleteRole(roleName string) (*proto.DeviceRoleConfig, error)
 	if err != nil {
 		return nil, err
 	}
+	log.Infof("Removing record for role %s", roleName)
 	err = os.Remove(s.path(roleName))
 	if err != nil {
 		return nil, err
