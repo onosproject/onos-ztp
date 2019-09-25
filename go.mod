@@ -8,8 +8,8 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/onosproject/onos-config v0.0.0-20190829172900-8d24cb86fe8a
-	github.com/onosproject/onos-topo v0.0.0-20190903221246-886e9fc1732a
+	github.com/onosproject/onos-config v0.0.0-20190925155912-64c89efd7c3d
+	github.com/onosproject/onos-topo v0.0.0-20190925160037-312ab9290a38
 	github.com/openconfig/gnmi v0.0.0-20180912164834-33a1865c3029
 	github.com/prometheus/client_golang v0.9.4 // indirect
 	github.com/spf13/cobra v0.0.5
