@@ -16,7 +16,7 @@ package southbound
 
 import (
 	"github.com/onosproject/onos-topo/api/device"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/store"
 	log "k8s.io/klog"
 )
@@ -24,7 +24,7 @@ import (
 // ProvisionerTask defines a contract of an activity that provisions an aspect of device operation.
 type ProvisionerTask interface {
 	// Provision sets up a device for an aspect of device operation.
-	Provision(d *device.Device, cfg *proto.DeviceRoleConfig) error
+	Provision(d *device.Device, cfg *admin.DeviceRoleConfig) error
 }
 
 // DeviceProvisioner is responsible for provisioning devices with the role-specific configurations.
@@ -51,7 +51,7 @@ func (p *DeviceProvisioner) Start(devices chan *device.Device) {
 	}()
 }
 
-func (p *DeviceProvisioner) provisionDevice(d *device.Device, cfg *proto.DeviceRoleConfig) {
+func (p *DeviceProvisioner) provisionDevice(d *device.Device, cfg *admin.DeviceRoleConfig) {
 	log.Infof("Provisioning device %s with config for role %s...", d.GetID(), cfg.GetRole())
 	for _, t := range p.Tasks {
 		err := t.Provision(d, cfg)

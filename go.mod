@@ -13,5 +13,6 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.5.0
 	google.golang.org/grpc v1.25.0
+	gotest.tools v2.2.0+incompatible
 	k8s.io/klog v1.0.0
 )

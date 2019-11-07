@@ -17,9 +17,9 @@ package roles
 
 import (
 	"context"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/manager"
 	"github.com/onosproject/onos-ztp/pkg/northbound"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"google.golang.org/grpc"
 	log "k8s.io/klog"
 	"sync"
@@ -34,7 +34,7 @@ type Service struct {
 func (s Service) Register(r *grpc.Server) {
 	server := &Server{}
 	go server.dispatch()
-	proto.RegisterDeviceRoleServiceServer(r, server)
+	admin.RegisterDeviceRoleServiceServer(r, server)
 }
 
 // Server implements the gRPC service for zero-touch provisioning facilities.
@@ -44,7 +44,7 @@ type Server struct {
 	subscribers       sync.Map
 }
 
-func (s *Server) register(changes *chan proto.DeviceRoleChange) int {
+func (s *Server) register(changes *chan admin.DeviceRoleChange) int {
 	// TODO: add hashing or mutex
 	s.subscriberCount++
 	key := s.subscriberCount
@@ -57,21 +57,21 @@ func (s *Server) unregister(key int) {
 }
 
 // Set provides means to add, update or delete device role configuration.
-func (s *Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*proto.DeviceRoleChangeResponse, error) {
+func (s *Server) Set(ctx context.Context, r *admin.DeviceRoleChangeRequest) (*admin.DeviceRoleChangeResponse, error) {
 	var err error
 	var cfg = r.GetConfig()
-	var changeType = proto.DeviceRoleChange_UPDATED
+	var changeType = admin.DeviceRoleChange_UPDATED
 
 	switch r.GetChange() {
-	case proto.DeviceRoleChangeRequest_ADD:
-		changeType = proto.DeviceRoleChange_ADDED
+	case admin.DeviceRoleChangeRequest_ADD:
+		changeType = admin.DeviceRoleChange_ADDED
 		log.Infof("Adding new role %s", cfg.GetRole())
 		err = manager.GetManager().RoleStore.WriteRole(cfg, false)
-	case proto.DeviceRoleChangeRequest_UPDATE:
+	case admin.DeviceRoleChangeRequest_UPDATE:
 		log.Infof("Updating role %s", cfg.GetRole())
 		err = manager.GetManager().RoleStore.WriteRole(cfg, true)
-	case proto.DeviceRoleChangeRequest_DELETE:
-		changeType = proto.DeviceRoleChange_DELETED
+	case admin.DeviceRoleChangeRequest_DELETE:
+		changeType = admin.DeviceRoleChange_DELETED
 		log.Infof("Removing role %s", cfg.GetRole())
 		cfg, err = manager.GetManager().RoleStore.DeleteRole(cfg.Role)
 	}
@@ -80,7 +80,7 @@ func (s *Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*pr
 		return nil, err
 	}
 
-	change := proto.DeviceRoleChange{
+	change := admin.DeviceRoleChange{
 		Change: changeType,
 		Config: cfg,
 	}
@@ -90,13 +90,13 @@ func (s *Server) Set(ctx context.Context, r *proto.DeviceRoleChangeRequest) (*pr
 	manager.GetManager().ChangesChannel <- change
 
 	// ...and return it to the caller
-	return &proto.DeviceRoleChangeResponse{
+	return &admin.DeviceRoleChangeResponse{
 		Change: &change,
 	}, nil
 }
 
 // Get provides means to query device role configuration.
-func (s *Server) Get(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_GetServer) error {
+func (s *Server) Get(req *admin.DeviceRoleRequest, stream admin.DeviceRoleService_GetServer) error {
 	roleName := req.GetRole()
 	if len(roleName) > 0 {
 		return s.sendRoleConfig(roleName, stream)
@@ -109,7 +109,7 @@ func (s *Server) Get(req *proto.DeviceRoleRequest, stream proto.DeviceRoleServic
 	return err
 }
 
-func (s *Server) sendRoleConfig(roleName string, stream proto.DeviceRoleService_GetServer) error {
+func (s *Server) sendRoleConfig(roleName string, stream admin.DeviceRoleService_GetServer) error {
 	role, err := manager.GetManager().RoleStore.ReadRole(roleName)
 	if err == nil {
 		err = stream.Send(role)
@@ -118,9 +118,9 @@ func (s *Server) sendRoleConfig(roleName string, stream proto.DeviceRoleService_
 }
 
 // Subscribe provides means to monitor changes in the device role configuration.
-func (s *Server) Subscribe(req *proto.DeviceRoleRequest, stream proto.DeviceRoleService_SubscribeServer) error {
+func (s *Server) Subscribe(req *admin.DeviceRoleRequest, stream admin.DeviceRoleService_SubscribeServer) error {
 	// Create and register a channel on which to receive notifications
-	changeChan := make(chan proto.DeviceRoleChange)
+	changeChan := make(chan admin.DeviceRoleChange)
 	key := s.register(&changeChan)
 	defer s.unregister(key)
 
@@ -148,7 +148,7 @@ func (s *Server) dispatch() {
 			break
 		}
 		s.subscribers.Range(func(key, sub interface{}) bool {
-			ch := sub.(*chan proto.DeviceRoleChange)
+			ch := sub.(*chan admin.DeviceRoleChange)
 			*ch <- change
 			return true
 		})

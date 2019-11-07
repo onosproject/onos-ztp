@@ -15,7 +15,7 @@
 package store
 
 import (
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"gotest.tools/assert"
 	"os"
 	"testing"
@@ -39,7 +39,7 @@ func Test_BadRepo(t *testing.T) {
 	db := RoleStore{Dir: "/xney"}
 	_, err := db.ReadRole("foo")
 	assert.Assert(t, err != nil, "error expected")
-	err = db.WriteRole(&proto.DeviceRoleConfig{}, true)
+	err = db.WriteRole(&admin.DeviceRoleConfig{}, true)
 	assert.Assert(t, err != nil, "error expected")
 }
 
@@ -52,15 +52,15 @@ func Test_EmptyRepo(t *testing.T) {
 
 func Test_Basics(t *testing.T) {
 	db := setupRepo(t, "/tmp/roledb/2")
-	role := proto.DeviceRoleConfig{
+	role := admin.DeviceRoleConfig{
 		Role: "leaf",
-		Config: &proto.DeviceConfig{
+		Config: &admin.DeviceConfig{
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
+		Pipeline: &admin.DevicePipeline{Pipeconf: "simple"},
 	}
-	role.GetConfig().Properties = append(role.GetConfig().Properties, &proto.DeviceProperty{
+	role.GetConfig().Properties = append(role.GetConfig().Properties, &admin.DeviceProperty{
 		Path:  "/foo/bar",
 		Type:  "string_val",
 		Value: "totally fubar",

@@ -17,7 +17,7 @@ package southbound
 import (
 	"github.com/golang/mock/gomock"
 	"github.com/onosproject/onos-topo/api/device"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/southbound/mock"
 	"github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/openconfig/gnmi/proto/gnmi_ext"
@@ -37,17 +37,17 @@ func Test_Provision(t *testing.T) {
 	client.EXPECT().Set(gomock.Any(), gomock.Any()).
 		Return(&gnmi.SetResponse{Extension: []*gnmi_ext.Extension{}}, nil)
 
-	role := proto.DeviceRoleConfig{
+	role := admin.DeviceRoleConfig{
 		Role: "leaf",
-		Config: &proto.DeviceConfig{
+		Config: &admin.DeviceConfig{
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
+		Pipeline: &admin.DevicePipeline{Pipeconf: "simple"},
 	}
 	role.GetConfig().Properties = append(role.GetConfig().Properties,
-		&proto.DeviceProperty{Path: "/foo/string", Type: "string_val", Value: "totally fubar"},
-		&proto.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "true"},
+		&admin.DeviceProperty{Path: "/foo/string", Type: "string_val", Value: "totally fubar"},
+		&admin.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "true"},
 	)
 
 	d := device.Device{ID: "foo", Version: "leaf", Type: "bar"}
@@ -66,13 +66,13 @@ func Test_BadProvision(t *testing.T) {
 	client.EXPECT().Set(gomock.Any(), gomock.Any()).
 		Return(nil, io.ErrClosedPipe)
 
-	role := proto.DeviceRoleConfig{
+	role := admin.DeviceRoleConfig{
 		Role: "leaf",
-		Config: &proto.DeviceConfig{
+		Config: &admin.DeviceConfig{
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
+		Pipeline: &admin.DevicePipeline{Pipeconf: "simple"},
 	}
 
 	d := device.Device{ID: "foo", Version: "leaf", Type: "bar"}
@@ -81,21 +81,21 @@ func Test_BadProvision(t *testing.T) {
 }
 
 func Test_Types(t *testing.T) {
-	role := proto.DeviceRoleConfig{
+	role := admin.DeviceRoleConfig{
 		Role: "leaf",
-		Config: &proto.DeviceConfig{
+		Config: &admin.DeviceConfig{
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
+		Pipeline: &admin.DevicePipeline{Pipeconf: "simple"},
 	}
 	role.GetConfig().Properties = append(role.GetConfig().Properties,
-		&proto.DeviceProperty{Path: "/foo/string", Type: "string_val", Value: "totally fubar"},
-		&proto.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "true"},
-		&proto.DeviceProperty{Path: "/foo/int", Type: "int_val", Value: "-123"},
-		&proto.DeviceProperty{Path: "/foo/uint", Type: "uint_val", Value: "123"},
-		&proto.DeviceProperty{Path: "/foo/float", Type: "float_val", Value: "123567890.655431"},
-		&proto.DeviceProperty{Path: "/foo/huh", Type: "wut", Value: "123567890.655431"},
+		&admin.DeviceProperty{Path: "/foo/string", Type: "string_val", Value: "totally fubar"},
+		&admin.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "true"},
+		&admin.DeviceProperty{Path: "/foo/int", Type: "int_val", Value: "-123"},
+		&admin.DeviceProperty{Path: "/foo/uint", Type: "uint_val", Value: "123"},
+		&admin.DeviceProperty{Path: "/foo/float", Type: "float_val", Value: "123567890.655431"},
+		&admin.DeviceProperty{Path: "/foo/huh", Type: "wut", Value: "123567890.655431"},
 	)
 	d := device.Device{ID: "foo", Version: "leaf", Type: "bar"}
 	v := makeSetRequest(&d, &role)
@@ -103,19 +103,19 @@ func Test_Types(t *testing.T) {
 }
 
 func Test_BadTypes(t *testing.T) {
-	role := proto.DeviceRoleConfig{
+	role := admin.DeviceRoleConfig{
 		Role: "leaf",
-		Config: &proto.DeviceConfig{
+		Config: &admin.DeviceConfig{
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
+		Pipeline: &admin.DevicePipeline{Pipeconf: "simple"},
 	}
 	role.GetConfig().Properties = append(role.GetConfig().Properties,
-		&proto.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "x"},
-		&proto.DeviceProperty{Path: "/foo/int", Type: "int_val", Value: "!123"},
-		&proto.DeviceProperty{Path: "/foo/uint", Type: "uint_val", Value: "%123"},
-		&proto.DeviceProperty{Path: "/foo/float", Type: "float_val", Value: "1|390.65x"},
+		&admin.DeviceProperty{Path: "/foo/bool", Type: "bool_val", Value: "x"},
+		&admin.DeviceProperty{Path: "/foo/int", Type: "int_val", Value: "!123"},
+		&admin.DeviceProperty{Path: "/foo/uint", Type: "uint_val", Value: "%123"},
+		&admin.DeviceProperty{Path: "/foo/float", Type: "float_val", Value: "1|390.65x"},
 	)
 	d := device.Device{ID: "foo", Version: "leaf", Type: "bar"}
 	v := makeSetRequest(&d, &role)

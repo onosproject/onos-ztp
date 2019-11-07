@@ -18,7 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/spf13/cobra"
 	"io"
 	"io/ioutil"
@@ -42,12 +42,12 @@ func getGetRolesCommand() *cobra.Command {
 func runListRolesCommand(cmd *cobra.Command, args []string) {
 	conn := getConnection()
 	defer conn.Close()
-	client := proto.NewDeviceRoleServiceClient(conn)
+	client := admin.NewDeviceRoleServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	stream, err := client.Get(ctx, &proto.DeviceRoleRequest{})
+	stream, err := client.Get(ctx, &admin.DeviceRoleRequest{})
 	if err != nil {
 		ExitWithError(ExitBadConnection, err)
 	}
@@ -79,12 +79,12 @@ func runGetRoleCommand(cmd *cobra.Command, args []string) {
 
 	conn := getConnection()
 	defer conn.Close()
-	client := proto.NewDeviceRoleServiceClient(conn)
+	client := admin.NewDeviceRoleServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	stream, err := client.Get(ctx, &proto.DeviceRoleRequest{Role: args[0]})
+	stream, err := client.Get(ctx, &admin.DeviceRoleRequest{Role: args[0]})
 	if err != nil {
 		ExitWithError(ExitBadConnection, err)
 	}
@@ -142,7 +142,7 @@ func runAddOrUpdateRoleCommand(cmd *cobra.Command, args []string, overwrite bool
 
 	conn := getConnection()
 	defer conn.Close()
-	client := proto.NewDeviceRoleServiceClient(conn)
+	client := admin.NewDeviceRoleServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -158,18 +158,18 @@ func runAddOrUpdateRoleCommand(cmd *cobra.Command, args []string, overwrite bool
 		ExitWithError(ExitBadArgs, err)
 	}
 
-	roleConfig := proto.DeviceRoleConfig{}
+	roleConfig := admin.DeviceRoleConfig{}
 	err = json.Unmarshal(jsonBlob, &roleConfig)
 	if err != nil {
 		ExitWithError(ExitBadArgs, err)
 	}
 
-	change := proto.DeviceRoleChangeRequest_ADD
+	change := admin.DeviceRoleChangeRequest_ADD
 	if overwrite {
-		change = proto.DeviceRoleChangeRequest_UPDATE
+		change = admin.DeviceRoleChangeRequest_UPDATE
 	}
 
-	_, err = client.Set(ctx, &proto.DeviceRoleChangeRequest{
+	_, err = client.Set(ctx, &admin.DeviceRoleChangeRequest{
 		Config: &roleConfig,
 		Change: change,
 	})
@@ -194,14 +194,14 @@ func runRemoveRolesCommand(cmd *cobra.Command, args []string) {
 
 	conn := getConnection()
 	defer conn.Close()
-	client := proto.NewDeviceRoleServiceClient(conn)
+	client := admin.NewDeviceRoleServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	_, err := client.Set(ctx, &proto.DeviceRoleChangeRequest{
-		Config: &proto.DeviceRoleConfig{Role: args[0]},
-		Change: proto.DeviceRoleChangeRequest_DELETE,
+	_, err := client.Set(ctx, &admin.DeviceRoleChangeRequest{
+		Config: &admin.DeviceRoleConfig{Role: args[0]},
+		Change: admin.DeviceRoleChangeRequest_DELETE,
 	})
 	if err != nil {
 		ExitWithError(ExitBadConnection, err)

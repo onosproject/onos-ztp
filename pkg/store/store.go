@@ -18,7 +18,7 @@ package store
 import (
 	"encoding/json"
 	"errors"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"io/ioutil"
 	log "k8s.io/klog"
 	"os"
@@ -49,7 +49,7 @@ func (s *RoleStore) ListRoles() ([]string, error) {
 }
 
 // WriteRole stores the specified role configuration
-func (s *RoleStore) WriteRole(roleConfig *proto.DeviceRoleConfig, overwrite bool) error {
+func (s *RoleStore) WriteRole(roleConfig *admin.DeviceRoleConfig, overwrite bool) error {
 	jsonBlob, err := json.Marshal(roleConfig)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (s *RoleStore) WriteRole(roleConfig *proto.DeviceRoleConfig, overwrite bool
 }
 
 // ReadRole reads the named role configuration
-func (s *RoleStore) ReadRole(roleName string) (*proto.DeviceRoleConfig, error) {
+func (s *RoleStore) ReadRole(roleName string) (*admin.DeviceRoleConfig, error) {
 	jsonFile, err := os.OpenFile(s.path(roleName), os.O_RDONLY, 0644)
 	if err != nil {
 		return nil, err
@@ -76,7 +76,7 @@ func (s *RoleStore) ReadRole(roleName string) (*proto.DeviceRoleConfig, error) {
 		return nil, err
 	}
 
-	roleConfig := proto.DeviceRoleConfig{}
+	roleConfig := admin.DeviceRoleConfig{}
 	err = json.Unmarshal(jsonBlob, &roleConfig)
 	if err != nil {
 		return nil, err
@@ -85,7 +85,7 @@ func (s *RoleStore) ReadRole(roleName string) (*proto.DeviceRoleConfig, error) {
 }
 
 // DeleteRole removes the named role configuration
-func (s *RoleStore) DeleteRole(roleName string) (*proto.DeviceRoleConfig, error) {
+func (s *RoleStore) DeleteRole(roleName string) (*admin.DeviceRoleConfig, error) {
 	role, err := s.ReadRole(roleName)
 	if err != nil {
 		return nil, err

@@ -17,7 +17,7 @@ package manager
 
 import (
 	"github.com/onosproject/onos-topo/api/device"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/southbound"
 	"github.com/onosproject/onos-ztp/pkg/store"
 	"google.golang.org/grpc"
@@ -30,7 +30,7 @@ var mgr Manager
 // Manager single point of entry for the zero touch provisioning system.
 type Manager struct {
 	RoleStore      store.RoleStore
-	ChangesChannel chan proto.DeviceRoleChange
+	ChangesChannel chan admin.DeviceRoleChange
 
 	deviceChanel chan *device.Device
 	connOptions  []grpc.DialOption
@@ -43,7 +43,7 @@ func NewManager() (*Manager, error) {
 	log.Info("Creating Manager")
 	mgr = Manager{
 		RoleStore:      store.RoleStore{Dir: "roledb"},
-		ChangesChannel: make(chan proto.DeviceRoleChange, 10),
+		ChangesChannel: make(chan admin.DeviceRoleChange, 10),
 		monitor:        southbound.DeviceMonitor{},
 		provisioner:    southbound.DeviceProvisioner{},
 	}
