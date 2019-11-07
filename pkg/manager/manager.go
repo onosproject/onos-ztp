@@ -16,7 +16,7 @@
 package manager
 
 import (
-	"github.com/onosproject/onos-topo/pkg/northbound/device"
+	"github.com/onosproject/onos-topo/api/device"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"github.com/onosproject/onos-ztp/pkg/southbound"
 	"github.com/onosproject/onos-ztp/pkg/store"

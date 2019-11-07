@@ -15,7 +15,7 @@
 package southbound
 
 import (
-	"github.com/onosproject/onos-topo/pkg/northbound/device"
+	"github.com/onosproject/onos-topo/api/device"
 	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"github.com/onosproject/onos-ztp/pkg/store"
 	log "k8s.io/klog"
