@@ -19,8 +19,8 @@ import (
 	"fmt"
 	ext "github.com/onosproject/onos-config/pkg/northbound/gnmi"
 	"github.com/onosproject/onos-config/pkg/utils"
-	"github.com/onosproject/onos-topo/pkg/northbound/device"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-topo/api/device"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/openconfig/gnmi/proto/gnmi_ext"
 	"google.golang.org/grpc"
@@ -49,7 +49,7 @@ func (p *GNMIProvisioner) Init(opts ...grpc.DialOption) error {
 }
 
 // Provision runs the gNMI provisioning task
-func (p *GNMIProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfig) error {
+func (p *GNMIProvisioner) Provision(d *device.Device, cfg *admin.DeviceRoleConfig) error {
 	// TODO: implement this fully
 	request := makeSetRequest(d, cfg)
 	log.Errorf("Applying device configuration %v to %s", request, d.GetID())
@@ -63,7 +63,7 @@ func (p *GNMIProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfi
 	return nil
 }
 
-func makeSetRequest(d *device.Device, config *proto.DeviceRoleConfig) *gnmi.SetRequest {
+func makeSetRequest(d *device.Device, config *admin.DeviceRoleConfig) *gnmi.SetRequest {
 	updatedPaths := make([]*gnmi.Update, 0)
 	for _, prop := range config.Config.Properties {
 		value, err := parseVal(*prop)
@@ -112,7 +112,7 @@ func makeSetRequest(d *device.Device, config *proto.DeviceRoleConfig) *gnmi.SetR
 	return setRequest
 }
 
-func parseVal(prop proto.DeviceProperty) (*gnmi.TypedValue, error) {
+func parseVal(prop admin.DeviceProperty) (*gnmi.TypedValue, error) {
 	err := strconv.ErrSyntax
 	switch prop.Type {
 	case "string_val":

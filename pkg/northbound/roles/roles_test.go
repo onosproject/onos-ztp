@@ -16,8 +16,8 @@ package roles
 
 import (
 	"context"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/northbound"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
 	"google.golang.org/grpc"
 	"gotest.tools/assert"
 	"io"
@@ -27,21 +27,21 @@ import (
 )
 
 var (
-	spineRole = proto.DeviceRoleConfig{
+	spineRole = admin.DeviceRoleConfig{
 		Role: "spine",
-		Config: &proto.DeviceConfig{
+		Config: &admin.DeviceConfig{
 			SoftwareVersion: "2019.08.06.1ea",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
+		Pipeline: &admin.DevicePipeline{Pipeconf: "simple"},
 	}
-	leafRole = proto.DeviceRoleConfig{
+	leafRole = admin.DeviceRoleConfig{
 		Role: "leaf",
-		Config: &proto.DeviceConfig{
+		Config: &admin.DeviceConfig{
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeconf: "complex"},
+		Pipeline: &admin.DevicePipeline{Pipeconf: "complex"},
 	}
 )
 
@@ -49,12 +49,12 @@ var (
 func TestMain(m *testing.M) {
 	var waitGroup sync.WaitGroup
 
-	spineRole.GetConfig().Properties = append(leafRole.GetConfig().Properties, &proto.DeviceProperty{
+	spineRole.GetConfig().Properties = append(leafRole.GetConfig().Properties, &admin.DeviceProperty{
 		Path:  "/spine/weak",
 		Type:  "bool_val",
 		Value: "false",
 	})
-	leafRole.GetConfig().Properties = append(leafRole.GetConfig().Properties, &proto.DeviceProperty{
+	leafRole.GetConfig().Properties = append(leafRole.GetConfig().Properties, &admin.DeviceProperty{
 		Path:  "/foo/bar",
 		Type:  "string_val",
 		Value: "totally fubar",
@@ -66,58 +66,58 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func getClient() (*grpc.ClientConn, proto.DeviceRoleServiceClient) {
+func getClient() (*grpc.ClientConn, admin.DeviceRoleServiceClient) {
 	conn := northbound.Connect(northbound.Address, northbound.Opts...)
-	return conn, proto.NewDeviceRoleServiceClient(conn)
+	return conn, admin.NewDeviceRoleServiceClient(conn)
 }
 
 func Test_Set(t *testing.T) {
 	conn, client := getClient()
 	defer conn.Close()
-	resp, err := client.Set(context.Background(), &proto.DeviceRoleChangeRequest{
-		Change: proto.DeviceRoleChangeRequest_ADD,
+	resp, err := client.Set(context.Background(), &admin.DeviceRoleChangeRequest{
+		Change: admin.DeviceRoleChangeRequest_ADD,
 		Config: &leafRole,
 	})
 	assert.NilError(t, err, "unable to issue set add request")
-	assert.Equal(t, resp.GetChange().Change, proto.DeviceRoleChange_ADDED, "incorrect change type")
+	assert.Equal(t, resp.GetChange().Change, admin.DeviceRoleChange_ADDED, "incorrect change type")
 
-	resp, err = client.Set(context.Background(), &proto.DeviceRoleChangeRequest{
-		Change: proto.DeviceRoleChangeRequest_UPDATE,
+	resp, err = client.Set(context.Background(), &admin.DeviceRoleChangeRequest{
+		Change: admin.DeviceRoleChangeRequest_UPDATE,
 		Config: &leafRole,
 	})
 	assert.NilError(t, err, "unable to issue set update request")
-	assert.Equal(t, resp.GetChange().Change, proto.DeviceRoleChange_UPDATED, "incorrect change type")
+	assert.Equal(t, resp.GetChange().Change, admin.DeviceRoleChange_UPDATED, "incorrect change type")
 
-	resp, err = client.Set(context.Background(), &proto.DeviceRoleChangeRequest{
-		Change: proto.DeviceRoleChangeRequest_DELETE,
+	resp, err = client.Set(context.Background(), &admin.DeviceRoleChangeRequest{
+		Change: admin.DeviceRoleChangeRequest_DELETE,
 		Config: &leafRole,
 	})
 	assert.NilError(t, err, "unable to issue set delete request")
-	assert.Equal(t, resp.GetChange().Change, proto.DeviceRoleChange_DELETED, "incorrect change type")
+	assert.Equal(t, resp.GetChange().Change, admin.DeviceRoleChange_DELETED, "incorrect change type")
 }
 
 func Test_Get(t *testing.T) {
 	conn, client := getClient()
 	defer conn.Close()
-	testSetRole(t, client, &proto.DeviceRoleChangeRequest{
-		Change: proto.DeviceRoleChangeRequest_ADD,
+	testSetRole(t, client, &admin.DeviceRoleChangeRequest{
+		Change: admin.DeviceRoleChangeRequest_ADD,
 		Config: &spineRole,
 	})
-	testSetRole(t, client, &proto.DeviceRoleChangeRequest{
-		Change: proto.DeviceRoleChangeRequest_ADD,
+	testSetRole(t, client, &admin.DeviceRoleChangeRequest{
+		Change: admin.DeviceRoleChangeRequest_ADD,
 		Config: &leafRole,
 	})
-	testGetRole(t, client, &proto.DeviceRoleRequest{Role: "leaf"}, 1)
-	testGetRole(t, client, &proto.DeviceRoleRequest{}, 2)
+	testGetRole(t, client, &admin.DeviceRoleRequest{Role: "leaf"}, 1)
+	testGetRole(t, client, &admin.DeviceRoleRequest{}, 2)
 }
 
-func testSetRole(t *testing.T, client proto.DeviceRoleServiceClient, request *proto.DeviceRoleChangeRequest) {
+func testSetRole(t *testing.T, client admin.DeviceRoleServiceClient, request *admin.DeviceRoleChangeRequest) {
 	resp, err := client.Set(context.Background(), request)
 	assert.NilError(t, err, "unable to issue set request")
-	assert.Equal(t, resp.GetChange().Change, proto.DeviceRoleChange_ADDED, "incorrect change type")
+	assert.Equal(t, resp.GetChange().Change, admin.DeviceRoleChange_ADDED, "incorrect change type")
 }
 
-func testGetRole(t *testing.T, client proto.DeviceRoleServiceClient, request *proto.DeviceRoleRequest, count int) {
+func testGetRole(t *testing.T, client admin.DeviceRoleServiceClient, request *admin.DeviceRoleRequest, count int) {
 	stream, err := client.Get(context.Background(), request)
 	assert.NilError(t, err, "unable to issue get request")
 	i := 0
@@ -140,16 +140,16 @@ func testGetRole(t *testing.T, client proto.DeviceRoleServiceClient, request *pr
 func Test_BadGet(t *testing.T) {
 	conn, client := getClient()
 	defer conn.Close()
-	testGetRole(t, client, &proto.DeviceRoleRequest{Role: "none"}, 0)
+	testGetRole(t, client, &admin.DeviceRoleRequest{Role: "none"}, 0)
 }
 
 func Test_BadSet(t *testing.T) {
 	conn, client := getClient()
 	defer conn.Close()
 
-	_, err := client.Set(context.Background(), &proto.DeviceRoleChangeRequest{
-		Change: proto.DeviceRoleChangeRequest_DELETE,
-		Config: &proto.DeviceRoleConfig{Role: "none"},
+	_, err := client.Set(context.Background(), &admin.DeviceRoleChangeRequest{
+		Change: admin.DeviceRoleChangeRequest_DELETE,
+		Config: &admin.DeviceRoleConfig{Role: "none"},
 	})
 	assert.Assert(t, err != nil, "unable to issue set delete request")
 }
@@ -157,7 +157,7 @@ func Test_BadSet(t *testing.T) {
 //func Test_Subscribe(t *testing.T) {
 //	conn, client := getClient()
 //	defer conn.Close()
-//	stream, err := client.Subscribe(context.Background(), &proto.DeviceRoleRequest{})
+//	stream, err := client.Subscribe(context.Background(), &admin.DeviceRoleRequest{})
 //	assert.NilError(t, err, "unable to issue subscribe request")
 //
 //	w := sync.WaitGroup{}
@@ -168,7 +168,7 @@ func Test_BadSet(t *testing.T) {
 //		assert.Assert(t, err != io.EOF && in != nil, "expecting message; not EOF")
 //		assert.NilError(t, err, "unable to receive message")
 //		assert.Assert(t,
-//			in.GetChange() == proto.DeviceRoleChange_ADDED || in.GetChange() == proto.DeviceRoleChange_UPDATED,
+//			in.GetChange() == admin.DeviceRoleChange_ADDED || in.GetChange() == admin.DeviceRoleChange_UPDATED,
 //			"incorrect change type")
 //		i++
 //		w.Done()
@@ -178,8 +178,8 @@ func Test_BadSet(t *testing.T) {
 //		time.Sleep(100 * time.Millisecond)
 //		conn1, client1 := getClient()
 //		defer conn1.Close()
-//		testSetRole(t, client1, &proto.DeviceRoleChangeRequest{
-//			Change: proto.DeviceRoleChangeRequest_ADD,
+//		testSetRole(t, client1, &admin.DeviceRoleChangeRequest{
+//			Change: admin.DeviceRoleChangeRequest_ADD,
 //			Config: &spineRole,
 //		})
 //	}()

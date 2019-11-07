@@ -16,8 +16,8 @@ package southbound
 
 import (
 	"fmt"
-	"github.com/onosproject/onos-topo/pkg/northbound/device"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-topo/api/device"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"google.golang.org/grpc"
 	"io/ioutil"
 	log "k8s.io/klog"
@@ -41,7 +41,7 @@ func (p *PipelineProvisioner) Init(opts ...grpc.DialOption) error {
 }
 
 // Provision runs the pipeline provisioning task
-func (p *PipelineProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfig) error {
+func (p *PipelineProvisioner) Provision(d *device.Device, cfg *admin.DeviceRoleConfig) error {
 	attrs := d.GetAttributes()
 	ctl := cfg.GetPipeline()
 	cfgString := fmt.Sprintf(template, d.GetID(), d.GetAddress(), ctl.GetDriver(), ctl.GetPipeconf(), attrs["x"], attrs["y"])

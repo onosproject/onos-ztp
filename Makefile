@@ -14,6 +14,7 @@ build:
 
 test: # @HELP run the unit tests and source code validation
 test: build deps linters license_check
+	go test github.com/onosproject/onos-ztp/api/...
 	go test github.com/onosproject/onos-ztp/pkg/...
 	go test github.com/onosproject/onos-ztp/cmd/...
 
@@ -38,7 +39,7 @@ gofmt: # @HELP run the Go format validation
 protos: # @HELP compile the protobuf files (using protoc-go Docker)
 	docker run -it -v `pwd`:/go/src/github.com/onosproject/onos-ztp \
 		-w /go/src/github.com/onosproject/onos-ztp \
-		--entrypoint pkg/northbound/proto/compile-protos.sh \
+		--entrypoint build/bin/compile-protos.sh \
 		onosproject/protoc-go:stable
 
 update-deps: # @HELP pull updated dependencies

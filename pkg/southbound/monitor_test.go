@@ -16,7 +16,7 @@ package southbound
 
 import (
 	"github.com/golang/mock/gomock"
-	"github.com/onosproject/onos-topo/pkg/northbound/device"
+	"github.com/onosproject/onos-topo/api/device"
 	"github.com/onosproject/onos-ztp/pkg/southbound/mock"
 	"gotest.tools/assert"
 	"io"

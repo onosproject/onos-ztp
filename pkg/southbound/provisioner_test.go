@@ -16,8 +16,8 @@ package southbound
 
 import (
 	"errors"
-	"github.com/onosproject/onos-topo/pkg/northbound/device"
-	"github.com/onosproject/onos-ztp/pkg/northbound/proto"
+	"github.com/onosproject/onos-topo/api/device"
+	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/store"
 	"gotest.tools/assert"
 	"os"
@@ -37,13 +37,13 @@ func setupRepo(t *testing.T, path string) store.RoleStore {
 		t.Error("Unable to create db directory", err)
 	}
 	store := store.RoleStore{Dir: path}
-	role := proto.DeviceRoleConfig{
+	role := admin.DeviceRoleConfig{
 		Role: "leaf",
-		Config: &proto.DeviceConfig{
+		Config: &admin.DeviceConfig{
 			SoftwareVersion: "2019.08.02.c0ffee",
 			Properties:      nil,
 		},
-		Pipeline: &proto.DevicePipeline{Pipeconf: "simple"},
+		Pipeline: &admin.DevicePipeline{Pipeconf: "simple"},
 	}
 	err = store.WriteRole(&role, true)
 	assert.NilError(t, err, "Unable to create test role")
@@ -56,7 +56,7 @@ type TestProvisioner struct {
 	fail bool
 }
 
-func (t *TestProvisioner) Provision(d *device.Device, cfg *proto.DeviceRoleConfig) error {
+func (t *TestProvisioner) Provision(d *device.Device, cfg *admin.DeviceRoleConfig) error {
 	defer t.wg.Done()
 	if t.fail {
 		return errors.New("boom")
