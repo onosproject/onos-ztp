@@ -9,7 +9,7 @@ To start the server simply run:
 
 You may then use the ONOS CLI `ztp` commands from the consolidated ONOS CLI program, e.g.
 
-```
+```bash
 > onos ztp get roles
 > onos ztp add role test/samplejson/leaf.json
 > onos ztp add role test/samplejson/spine.json
