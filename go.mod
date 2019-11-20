@@ -7,8 +7,8 @@ require (
 	github.com/golang/mock v1.3.1
 	github.com/golang/protobuf v1.3.2
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/onosproject/onos-config v0.0.0-20191107002140-d37fb61c1859
-	github.com/onosproject/onos-topo v0.0.0-20191107000708-af85b82cfca3
+	github.com/onosproject/onos-config v0.0.0-20191119175602-24b6cc22ca22
+	github.com/onosproject/onos-topo v0.0.0-20191119143903-8866b0a65824
 	github.com/openconfig/gnmi v0.0.0-20190823184014-89b2bf29312c
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.5.0
