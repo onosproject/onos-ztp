@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
+	github.com/gogo/protobuf v1.3.1
 	github.com/golang/mock v1.3.1
 	github.com/golang/protobuf v1.3.2
 	github.com/mitchellh/go-homedir v1.1.0
