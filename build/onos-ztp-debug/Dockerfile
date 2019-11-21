@@ -17,15 +17,12 @@ COPY --from=debugBuilder /go/bin/dlv /usr/local/bin/dlv
 COPY --from=debugBuilder /go/bin/gnmi_cli /usr/local/bin/gnmi_cli
 
 RUN echo "#!/bin/sh" >> /usr/local/bin/onos-ztp-debug && \
-    echo "dlv --listen=:40000 --headless=true --accept-multiclient=true --api-version=2 --log exec /usr/local/bin/onos-ztp -- \"\$@\"" >> /usr/local/bin/onos-ztp-debug && \
+    echo "dlv --listen=:40000 --headless=true --continue --accept-multiclient=true --api-version=2 --log exec /usr/local/bin/onos-ztp -- \"\$@\"" >> /usr/local/bin/onos-ztp-debug && \
     chmod +x /usr/local/bin/onos-ztp-debug
 
 RUN addgroup -S onos-ztp && adduser -S -G onos-ztp onos-ztp
 USER onos-ztp
 WORKDIR /home/onos-ztp
-
-ENV ATOMIX_CONTROLLER=atomix-controller.kube-system.svc.cluster.local:5679
-ENV ATOMIX_NAMESPACE=default
 
 RUN cp /etc/profile /home/onos-ztp/.bashrc
 
