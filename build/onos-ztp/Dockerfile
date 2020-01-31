@@ -5,7 +5,10 @@ FROM onosproject/onos-ztp-base:$ONOS_ZTP_BASE_VERSION as base
 FROM alpine:3.9
 RUN apk add libc6-compat
 
-USER nobody
+RUN addgroup -S onos-ztp && adduser -S -G onos-ztp onos-ztp
+USER onos-ztp
+WORKDIR /home/onos-ztp
+
 
 COPY --from=base /go/src/github.com/onosproject/onos-ztp/build/_output/onos-ztp /usr/local/bin/onos-ztp
 
