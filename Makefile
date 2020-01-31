@@ -72,6 +72,7 @@ kind: # @HELP build Docker images and add them to the currently configured kind 
 kind: images
 	@if [ "`kind get clusters`" = '' ]; then echo "no kind cluster found" && exit 1; fi
 	kind load docker-image onosproject/onos-ztp:${ONOS_ZTP_DEBUG_VERSION}
+	kind load docker-image onosproject/onos-ztp:${ONOS_ZTP_VERSION}
 
 all: build images
 
