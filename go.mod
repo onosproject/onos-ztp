@@ -8,7 +8,7 @@ require (
 	github.com/golang/mock v1.3.1
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/onosproject/onos-config v0.0.0-20200129164042-507d135a7617
+	github.com/onosproject/onos-config v0.0.0-20200131171925-566694cf7e94
 	github.com/onosproject/onos-topo v0.0.0-20200129164117-959b964dfb29
 	github.com/openconfig/gnmi v0.0.0-20190823184014-89b2bf29312c
 	github.com/prometheus/tsdb v0.7.1 // indirect
