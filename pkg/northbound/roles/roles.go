@@ -17,13 +17,16 @@ package roles
 
 import (
 	"context"
+	"sync"
+
+	"github.com/onosproject/onos-lib-go/pkg/logging"
 	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/manager"
 	"github.com/onosproject/onos-ztp/pkg/northbound"
 	"google.golang.org/grpc"
-	log "k8s.io/klog"
-	"sync"
 )
+
+var log = logging.GetLogger("roles")
 
 // Service is a Service implementation for administration.
 type Service struct {

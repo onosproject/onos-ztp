@@ -17,16 +17,19 @@ package southbound
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	ext "github.com/onosproject/onos-config/pkg/northbound/gnmi"
 	"github.com/onosproject/onos-config/pkg/utils"
+	"github.com/onosproject/onos-lib-go/pkg/logging"
 	"github.com/onosproject/onos-topo/api/device"
 	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/openconfig/gnmi/proto/gnmi_ext"
 	"google.golang.org/grpc"
-	log "k8s.io/klog"
-	"strconv"
 )
+
+var log = logging.GetLogger("southbound")
 
 const (
 	configAddress = "onos-config:5150"

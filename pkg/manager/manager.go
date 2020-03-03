@@ -16,16 +16,19 @@
 package manager
 
 import (
+	"os"
+
+	"github.com/onosproject/onos-lib-go/pkg/logging"
 	"github.com/onosproject/onos-topo/api/device"
 	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/southbound"
 	"github.com/onosproject/onos-ztp/pkg/store"
 	"google.golang.org/grpc"
-	log "k8s.io/klog"
-	"os"
 )
 
 var mgr Manager
+
+var log = logging.GetLogger("manager")
 
 // Manager single point of entry for the zero touch provisioning system.
 type Manager struct {

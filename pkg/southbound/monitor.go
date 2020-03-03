@@ -18,11 +18,11 @@ package southbound
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/cenkalti/backoff"
 	"github.com/onosproject/onos-topo/api/device"
 	"google.golang.org/grpc"
-	log "k8s.io/klog"
-	"time"
 )
 
 // DeviceMonitor is responsible for monitoring topology for new device events.

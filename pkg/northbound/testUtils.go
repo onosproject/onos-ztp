@@ -16,12 +16,12 @@ package northbound
 
 import (
 	"fmt"
+	"os"
+	"sync"
+
 	"github.com/onosproject/onos-config/pkg/certs"
 	"github.com/onosproject/onos-ztp/pkg/manager"
 	"google.golang.org/grpc"
-	log "k8s.io/klog"
-	"os"
-	"sync"
 )
 
 var (

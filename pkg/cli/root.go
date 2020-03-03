@@ -14,12 +14,15 @@
 
 package cli
 
-import "github.com/spf13/cobra"
+import (
+	loglib "github.com/onosproject/onos-lib-go/pkg/logging/cli"
+	"github.com/spf13/cobra"
+)
 
 // GetCommand returns the root command for the ztp service
 func GetCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "ztp {get,add,update,remove,watch} [args]",
+		Use:   "ztp {get,add,update,remove,watch, log} [args]",
 		Short: "ONOS zero-touch provisioning subsystem commands",
 	}
 
@@ -28,6 +31,7 @@ func GetCommand() *cobra.Command {
 	cmd.AddCommand(getAddCommand())
 	cmd.AddCommand(getUpdateCommand())
 	cmd.AddCommand(getRemoveCommand())
+	cmd.AddCommand(loglib.GetCommand())
 	//cmd.AddCommand(getWatchCommand())
 	return cmd
 }
