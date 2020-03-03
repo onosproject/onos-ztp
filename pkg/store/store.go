@@ -18,13 +18,16 @@ package store
 import (
 	"encoding/json"
 	"errors"
-	"github.com/onosproject/onos-ztp/api/admin"
 	"io/ioutil"
-	log "k8s.io/klog"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/onosproject/onos-lib-go/pkg/logging"
+	"github.com/onosproject/onos-ztp/api/admin"
 )
+
+var log = logging.GetLogger("store")
 
 // RoleStore provides services to persist and retrieve role configuration records
 type RoleStore struct {

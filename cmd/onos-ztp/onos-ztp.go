@@ -30,13 +30,16 @@ package main
 
 import (
 	"flag"
+
+	"github.com/onosproject/onos-lib-go/pkg/logging"
 	"github.com/onosproject/onos-ztp/pkg/certs"
 	"github.com/onosproject/onos-ztp/pkg/manager"
 	"github.com/onosproject/onos-ztp/pkg/northbound"
 	"github.com/onosproject/onos-ztp/pkg/northbound/admin"
 	"github.com/onosproject/onos-ztp/pkg/northbound/roles"
-	log "k8s.io/klog"
 )
+
+var log = logging.GetLogger("main")
 
 // The main entry point
 func main() {
@@ -55,17 +58,6 @@ func main() {
 	}
 	flag.Parse()
 
-	klogFlags := flag.NewFlagSet("klog", flag.ExitOnError)
-	log.InitFlags(klogFlags)
-
-	// Sync the glog and klog flags.
-	flag.CommandLine.VisitAll(func(f1 *flag.Flag) {
-		f2 := klogFlags.Lookup(f1.Name)
-		if f2 != nil {
-			value := f1.Value.String()
-			_ = f2.Value.Set(value)
-		}
-	})
 	log.Info("Starting onos-ztp")
 
 	opts, err := certs.HandleCertArgs(keyPath, certPath)
@@ -90,6 +82,7 @@ func startServer(caPath string, keyPath string, certPath string) error {
 	s := northbound.NewServer(northbound.NewServerConfig(caPath, keyPath, certPath))
 	s.AddService(admin.Service{})
 	s.AddService(roles.Service{})
+	s.AddService(logging.Service{})
 
 	return s.Serve(func(started string) {
 		log.Info("Started NBI on ", started)

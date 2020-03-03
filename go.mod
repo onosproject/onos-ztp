@@ -7,12 +7,12 @@ require (
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/mock v1.3.1
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/onosproject/onos-config v0.0.0-20200131171925-566694cf7e94
-	github.com/onosproject/onos-topo v0.0.0-20200129164117-959b964dfb29
+	github.com/onosproject/onos-config v0.0.0-20200303001433-dbf05551b3c6
+	github.com/onosproject/onos-lib-go v0.0.0-20200302190914-1f7a2e625e9d
+	github.com/onosproject/onos-topo v0.0.0-20200227183114-fc86211b9a1d
 	github.com/openconfig/gnmi v0.0.0-20190823184014-89b2bf29312c
-	github.com/spf13/cobra v0.0.5
-	github.com/spf13/viper v1.5.0
-	google.golang.org/grpc v1.25.0
+	github.com/spf13/cobra v0.0.6
+	github.com/spf13/viper v1.6.2
+	google.golang.org/grpc v1.27.1
 	gotest.tools v2.2.0+incompatible
-	k8s.io/klog v1.0.0
 )

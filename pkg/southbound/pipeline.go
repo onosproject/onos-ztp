@@ -16,13 +16,13 @@ package southbound
 
 import (
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+
 	"github.com/onosproject/onos-topo/api/device"
 	"github.com/onosproject/onos-ztp/api/admin"
 	"google.golang.org/grpc"
-	"io/ioutil"
-	log "k8s.io/klog"
-	"net/http"
-	"strings"
 )
 
 // PipelineProvisioner handles provisioning of device pipeline via onos-netcfg

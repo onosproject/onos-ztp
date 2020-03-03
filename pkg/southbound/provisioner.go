@@ -18,7 +18,6 @@ import (
 	"github.com/onosproject/onos-topo/api/device"
 	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/store"
-	log "k8s.io/klog"
 )
 
 // ProvisionerTask defines a contract of an activity that provisions an aspect of device operation.
