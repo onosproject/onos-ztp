@@ -79,20 +79,6 @@ func getConfig(key string) interface{} {
 	return viper.Get(key)
 }
 
-// getConfigString gets a configuration value as a string
-func getConfigString(key string) string {
-	return viper.GetString(key)
-}
-
-// getConfigOrDefault gets a configuration value or returns the default if the configuration is not set
-func getConfigOrDefault(key string, def interface{}) interface{} {
-	value := getConfig(key)
-	if value != nil {
-		return value
-	}
-	return def
-}
-
 func initConfig() error {
 	// If the configuration file is not found, initialize a configuration in the home dir.
 	if err := viper.ReadInConfig(); err != nil {

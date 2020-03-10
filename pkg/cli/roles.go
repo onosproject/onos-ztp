@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/onosproject/onos-lib-go/pkg/cli"
 	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/spf13/cobra"
 	"io"
@@ -40,8 +41,12 @@ func getGetRolesCommand() *cobra.Command {
 }
 
 func runListRolesCommand(cmd *cobra.Command, args []string) {
-	conn := getConnection()
+	conn, err := cli.GetConnection(cmd)
+	if err != nil {
+		ExitWithError(ExitBadConnection, err)
+	}
 	defer conn.Close()
+
 	client := admin.NewDeviceRoleServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -77,7 +82,10 @@ func runGetRoleCommand(cmd *cobra.Command, args []string) {
 		log.Fatal("Not enough arguments")
 	}
 
-	conn := getConnection()
+	conn, err := cli.GetConnection(cmd)
+	if err != nil {
+		ExitWithError(ExitBadConnection, err)
+	}
 	defer conn.Close()
 	client := admin.NewDeviceRoleServiceClient(conn)
 
@@ -140,7 +148,10 @@ func runAddOrUpdateRoleCommand(cmd *cobra.Command, args []string, overwrite bool
 		log.Fatal("Not enough arguments")
 	}
 
-	conn := getConnection()
+	conn, err := cli.GetConnection(cmd)
+	if err != nil {
+		ExitWithError(ExitBadConnection, err)
+	}
 	defer conn.Close()
 	client := admin.NewDeviceRoleServiceClient(conn)
 
@@ -192,14 +203,17 @@ func runRemoveRolesCommand(cmd *cobra.Command, args []string) {
 		log.Fatal("Not enough arguments")
 	}
 
-	conn := getConnection()
+	conn, err := cli.GetConnection(cmd)
+	if err != nil {
+		ExitWithError(ExitBadConnection, err)
+	}
 	defer conn.Close()
 	client := admin.NewDeviceRoleServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	_, err := client.Set(ctx, &admin.DeviceRoleChangeRequest{
+	_, err = client.Set(ctx, &admin.DeviceRoleChangeRequest{
 		Config: &admin.DeviceRoleConfig{Role: args[0]},
 		Change: admin.DeviceRoleChangeRequest_DELETE,
 	})
