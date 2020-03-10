@@ -305,10 +305,13 @@ github.com/mxk/go-flowrate v0.0.0-20140419014527-cca7078d478f/go.mod h1:ZdcZmHo+
 github.com/oklog/ulid v1.3.1/go.mod h1:CirwcVhetQ6Lv90oh/F+FBtV6XMibvdAFo93nm5qn4U=
 github.com/onosproject/config-models/modelplugin/devicesim-1.0.0 v0.0.0-20200214110049-38f1117cd24a h1:nBDIS+wb7kf/pEtJffCC8ZkFRV9VB733FXiuCL5jgX8=
 github.com/onosproject/config-models/modelplugin/devicesim-1.0.0 v0.0.0-20200214110049-38f1117cd24a/go.mod h1:fnlrrfeXk6J57vIQ329fnNiOVCCeja9JzTaldVUb1cg=
+github.com/onosproject/config-models/modelplugin/devicesim-1.0.0 v0.0.0-20200303111912-723f2289d4c2/go.mod h1:fnlrrfeXk6J57vIQ329fnNiOVCCeja9JzTaldVUb1cg=
 github.com/onosproject/config-models/modelplugin/testdevice-1.0.0 v0.0.0-20200214110049-38f1117cd24a h1:yDqxjn/sHhhN1Iureln8wdfj0RXWLL13q/BXzi+qqjo=
 github.com/onosproject/config-models/modelplugin/testdevice-1.0.0 v0.0.0-20200214110049-38f1117cd24a/go.mod h1:WNjaBJ0e2gl1y7uu45AXmKCI0oxgCqSftha+FGMJ2JE=
+github.com/onosproject/config-models/modelplugin/testdevice-1.0.0 v0.0.0-20200303111912-723f2289d4c2/go.mod h1:WNjaBJ0e2gl1y7uu45AXmKCI0oxgCqSftha+FGMJ2JE=
 github.com/onosproject/config-models/modelplugin/testdevice-2.0.0 v0.0.0-20200214110049-38f1117cd24a h1:SjB2wocjHU6DeX+HhM5ov41CAnq4Vwr7LI0kXBljMVE=
 github.com/onosproject/config-models/modelplugin/testdevice-2.0.0 v0.0.0-20200214110049-38f1117cd24a/go.mod h1:kHe1VPG+H+ow9IQYy5DW4qLxZsT3yVSc+3aGrO0KuVY=
+github.com/onosproject/config-models/modelplugin/testdevice-2.0.0 v0.0.0-20200304144136-6992f473b240/go.mod h1:kHe1VPG+H+ow9IQYy5DW4qLxZsT3yVSc+3aGrO0KuVY=
 github.com/onosproject/onos-cli v0.0.0-20200205222355-b174234b2ffa/go.mod h1:aUcsRKvZxiJOoT1KCUgp4iiDe71pvawPqPrXWoPmKjI=
 github.com/onosproject/onos-config v0.0.0-20191116095118-2ca4b5f98ae2/go.mod h1:KqXDEuf9d/uiHCL1iso0s8j3UUofZjCHUhs5pVWwJ0E=
 github.com/onosproject/onos-config v0.0.0-20200124182344-6c3f5eb1e6ed/go.mod h1:rQfBju27qOGvL7Qtvxo6H9TlvU0oEw91emQzS14hmnE=
@@ -317,6 +320,8 @@ github.com/onosproject/onos-config v0.0.0-20200131171925-566694cf7e94/go.mod h1:
 github.com/onosproject/onos-config v0.0.0-20200204191831-5c2803ee469d/go.mod h1:rVNKd9v/Y4ZvttCte8jrf1KnfKSHbe0nwCXVxZC4EHk=
 github.com/onosproject/onos-config v0.0.0-20200303001433-dbf05551b3c6 h1:XcNBPm61g95Z0vEHDIuCELOBjodeN7WigB3wI8RwgNs=
 github.com/onosproject/onos-config v0.0.0-20200303001433-dbf05551b3c6/go.mod h1:5QU31DteNf74dsF/cfpt/TSN0Tvh9hXKM3x4//uA3Yo=
+github.com/onosproject/onos-config v0.0.0-20200310184202-71ecdd161b87 h1:lMMFzdjj0z45D/5pFr0GzQp1C76hYo68Fd1AoyG3Kwo=
+github.com/onosproject/onos-config v0.0.0-20200310184202-71ecdd161b87/go.mod h1:n99xiyc+EtXmGym1K5JKKaZcJcYt4W5n5bmLpJoBGHo=
 github.com/onosproject/onos-lib-go v0.0.0-20200302190914-1f7a2e625e9d h1:FhoPu05GZG8iRcukU29lxO2xZagEcq+ho8B/gFdMnKA=
 github.com/onosproject/onos-lib-go v0.0.0-20200302190914-1f7a2e625e9d/go.mod h1:tbdH7aqxvcOLSfz8cgiDwNP5szPnll1/m9HYKbXruSI=
 github.com/onosproject/onos-lib-go v0.0.0-20200307155659-8ad70c22b981 h1:ao+nAtL8RslrH8v/7XoXHU7q71JgvajFMIp3rcExrns=
@@ -330,6 +335,7 @@ github.com/onosproject/onos-test v0.0.0-20200202125349-5b744e8890fb/go.mod h1:Nb
 github.com/onosproject/onos-test v0.0.0-20200212201952-fb8d2ac644a0/go.mod h1:c85QqvQQniPVbWdaN585Ph4z22PjhoRXbWSiy13I870=
 github.com/onosproject/onos-test v0.0.0-20200222204048-99418ae1ce43/go.mod h1:9tviKLS0zfLMJhihooVPaeUuz/aIaWWCLr3YVOh2+kI=
 github.com/onosproject/onos-test v0.0.0-20200303000010-770fcdc350a0/go.mod h1:w6lAszyKEw+iOdYxkqJK9ofLFf7SAIfQ1iBA9CH8uB4=
+github.com/onosproject/onos-test v0.0.0-20200306000348-1f2c86fc76c6/go.mod h1:w6lAszyKEw+iOdYxkqJK9ofLFf7SAIfQ1iBA9CH8uB4=
 github.com/onosproject/onos-topo v0.0.0-20191107000708-af85b82cfca3 h1:J0qw6ZRZiLvWm94Yu1HI7K/hNG/52aRdnBErYmLJL3M=
 github.com/onosproject/onos-topo v0.0.0-20191107000708-af85b82cfca3/go.mod h1:oPGdJnMHy5UGx4slrbf84DEFqcKXuGMv36N+EBc3QwM=
 github.com/onosproject/onos-topo v0.0.0-20191113170912-88eeee89f4eb/go.mod h1:oPGdJnMHy5UGx4slrbf84DEFqcKXuGMv36N+EBc3QwM=
