@@ -20,9 +20,9 @@ import (
 	"sync"
 
 	"github.com/onosproject/onos-lib-go/pkg/logging"
+	"github.com/onosproject/onos-lib-go/pkg/northbound"
 	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/onosproject/onos-ztp/pkg/manager"
-	"github.com/onosproject/onos-ztp/pkg/northbound"
 	"google.golang.org/grpc"
 )
 

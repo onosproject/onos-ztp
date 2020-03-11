@@ -19,7 +19,9 @@ import (
 	"os"
 	"sync"
 
-	"github.com/onosproject/onos-config/pkg/certs"
+	"github.com/onosproject/onos-lib-go/pkg/certs"
+	"github.com/onosproject/onos-lib-go/pkg/logging"
+	"github.com/onosproject/onos-lib-go/pkg/northbound"
 	"github.com/onosproject/onos-ztp/pkg/manager"
 	"google.golang.org/grpc"
 )
@@ -35,9 +37,11 @@ var (
 	DbPath = "/tmp/rolesdb"
 )
 
+var log = logging.GetLogger("northbound")
+
 // SetUpServer sets up a test manager and a gRPC end-point
 // to which it registers the given service.
-func SetUpServer(port int16, service Service, waitGroup *sync.WaitGroup) {
+func SetUpServer(port int16, service northbound.Service, waitGroup *sync.WaitGroup) {
 	_ = os.RemoveAll(DbPath)
 	err := os.MkdirAll(DbPath, 0755)
 	if err != nil {
@@ -49,9 +53,8 @@ func SetUpServer(port int16, service Service, waitGroup *sync.WaitGroup) {
 		log.Error("Unable to load manager")
 	}
 
-	config := NewServerConfig("", "", "")
-	config.Port = port
-	s := NewServer(config)
+	config := northbound.NewServerConfig("", "", "", port, false)
+	s := northbound.NewServer(config)
 	s.AddService(service)
 
 	empty := ""
