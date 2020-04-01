@@ -50,7 +50,7 @@ func main() {
 
 	log.Info("Starting onos-ztp")
 
-	opts, err := certs.HandleCertArgs(keyPath, certPath)
+	opts, err := certs.HandleCertPaths(*caPath, *keyPath, *certPath, true)
 	if err != nil {
 		log.Fatal(err)
 	}
