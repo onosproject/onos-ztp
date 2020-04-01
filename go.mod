@@ -3,6 +3,7 @@ module github.com/onosproject/onos-ztp
 go 1.13
 
 require (
+	github.com/atomix/go-client v0.0.0-20200307025134-f638fa3fb644
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/mock v1.3.1
