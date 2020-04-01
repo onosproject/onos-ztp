@@ -35,15 +35,16 @@ func getGetRolesCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "roles",
 		Short: "Get device roles",
-		Run:   runListRolesCommand,
+		Args:  cobra.MaximumNArgs(0),
+		RunE:  runListRolesCommand,
 	}
 	return cmd
 }
 
-func runListRolesCommand(cmd *cobra.Command, args []string) {
+func runListRolesCommand(cmd *cobra.Command, args []string) error {
 	conn, err := cli.GetConnection(cmd)
 	if err != nil {
-		ExitWithError(ExitBadConnection, err)
+		return err
 	}
 	defer conn.Close()
 
@@ -54,7 +55,7 @@ func runListRolesCommand(cmd *cobra.Command, args []string) {
 
 	stream, err := client.Get(ctx, &admin.DeviceRoleRequest{})
 	if err != nil {
-		ExitWithError(ExitBadConnection, err)
+		return err
 	}
 
 	for {
@@ -62,29 +63,30 @@ func runListRolesCommand(cmd *cobra.Command, args []string) {
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			ExitWithError(ExitError, err)
+			return err
 		}
 		fmt.Printf("%s\n", response.GetRole())
 	}
+	return nil
 }
 
 func getGetRoleCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "role <roleName>",
 		Short: "Get a device role",
-		Run:   runGetRoleCommand,
+		RunE:  runGetRoleCommand,
 	}
 	return cmd
 }
 
-func runGetRoleCommand(cmd *cobra.Command, args []string) {
+func runGetRoleCommand(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		log.Fatal("Not enough arguments")
 	}
 
 	conn, err := cli.GetConnection(cmd)
 	if err != nil {
-		ExitWithError(ExitBadConnection, err)
+		return err
 	}
 	defer conn.Close()
 	client := admin.NewDeviceRoleServiceClient(conn)
@@ -94,63 +96,66 @@ func runGetRoleCommand(cmd *cobra.Command, args []string) {
 
 	stream, err := client.Get(ctx, &admin.DeviceRoleRequest{Role: args[0]})
 	if err != nil {
-		ExitWithError(ExitBadConnection, err)
+		return err
 	}
 
 	response, err := stream.Recv()
 	if err == io.EOF {
-		return
+		return nil
 	} else if err != nil {
-		ExitWithError(ExitError, err)
+		return err
 	}
 
 	json, err := json.MarshalIndent(response, "", "  ")
 	if err != nil {
-		ExitWithOutput("Unable to receive role: %v", err)
+		cli.Output("Unable to receive role")
+		return err
 	}
 
-	_, err = os.Stdout.Write(json)
+	cli.Output("%s", json)
 	if err != nil {
-		ExitWithOutput("Unable to write: %v", err)
+		cli.Output("Unable to write")
+		return err
 	}
+	return nil
 }
 
 func getAddRoleCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "role <fileName>",
 		Short: "Add a device role",
-		Run:   runAddRoleCommand,
+		RunE:  runAddRoleCommand,
 	}
 	cmd.PersistentFlags().Bool("overwrite", false, "Overwrite the role if it already exists")
 	return cmd
 }
 
-func runAddRoleCommand(cmd *cobra.Command, args []string) {
-	runAddOrUpdateRoleCommand(cmd, args, false)
+func runAddRoleCommand(cmd *cobra.Command, args []string) error {
+	return runAddOrUpdateRoleCommand(cmd, args, false)
 }
 
 func getUpdateRoleCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "role <fileName>",
 		Short: "Add a device role",
-		Run:   runUpdateRoleCommand,
+		RunE:  runUpdateRoleCommand,
 	}
 	cmd.PersistentFlags().Bool("overwrite", false, "Overwrite the role if it already exists")
 	return cmd
 }
 
-func runUpdateRoleCommand(cmd *cobra.Command, args []string) {
-	runAddOrUpdateRoleCommand(cmd, args, true)
+func runUpdateRoleCommand(cmd *cobra.Command, args []string) error {
+	return runAddOrUpdateRoleCommand(cmd, args, true)
 }
 
-func runAddOrUpdateRoleCommand(cmd *cobra.Command, args []string, overwrite bool) {
+func runAddOrUpdateRoleCommand(cmd *cobra.Command, args []string, overwrite bool) error {
 	if len(args) == 0 {
 		log.Fatal("Not enough arguments")
 	}
 
 	conn, err := cli.GetConnection(cmd)
 	if err != nil {
-		ExitWithError(ExitBadConnection, err)
+		return err
 	}
 	defer conn.Close()
 	client := admin.NewDeviceRoleServiceClient(conn)
@@ -161,18 +166,18 @@ func runAddOrUpdateRoleCommand(cmd *cobra.Command, args []string, overwrite bool
 	roleFile := args[0]
 	jsonFile, err := os.OpenFile(roleFile, os.O_RDONLY, 0644)
 	if err != nil {
-		ExitWithError(ExitBadArgs, err)
+		return err
 	}
 
 	jsonBlob, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
-		ExitWithError(ExitBadArgs, err)
+		return err
 	}
 
 	roleConfig := admin.DeviceRoleConfig{}
 	err = json.Unmarshal(jsonBlob, &roleConfig)
 	if err != nil {
-		ExitWithError(ExitBadArgs, err)
+		return err
 	}
 
 	change := admin.DeviceRoleChangeRequest_ADD
@@ -184,28 +189,26 @@ func runAddOrUpdateRoleCommand(cmd *cobra.Command, args []string, overwrite bool
 		Config: &roleConfig,
 		Change: change,
 	})
-	if err != nil {
-		ExitWithError(ExitBadConnection, err)
-	}
+	return err
 }
 
 func getRemoveRoleCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "role <roleName>",
 		Short: "Remove a device role",
-		Run:   runRemoveRolesCommand,
+		RunE:  runRemoveRolesCommand,
 	}
 	return cmd
 }
 
-func runRemoveRolesCommand(cmd *cobra.Command, args []string) {
+func runRemoveRolesCommand(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		log.Fatal("Not enough arguments")
 	}
 
 	conn, err := cli.GetConnection(cmd)
 	if err != nil {
-		ExitWithError(ExitBadConnection, err)
+		return err
 	}
 	defer conn.Close()
 	client := admin.NewDeviceRoleServiceClient(conn)
@@ -217,7 +220,5 @@ func runRemoveRolesCommand(cmd *cobra.Command, args []string) {
 		Config: &admin.DeviceRoleConfig{Role: args[0]},
 		Change: admin.DeviceRoleChangeRequest_DELETE,
 	})
-	if err != nil {
-		ExitWithError(ExitBadConnection, err)
-	}
+	return err
 }

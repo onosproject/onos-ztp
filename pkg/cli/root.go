@@ -15,9 +15,25 @@
 package cli
 
 import (
+	clilib "github.com/onosproject/onos-lib-go/pkg/cli"
 	loglib "github.com/onosproject/onos-lib-go/pkg/logging/cli"
 	"github.com/spf13/cobra"
 )
+
+const (
+	configName     = "ztp"
+	defaultAddress = "onos-ztp:5150"
+)
+
+// init initializes the command line
+func init() {
+	clilib.InitConfig(configName)
+}
+
+// Init is a hook called after cobra initialization
+func Init() {
+	// noop for now
+}
 
 // GetCommand returns the root command for the ztp service
 func GetCommand() *cobra.Command {
@@ -26,7 +42,8 @@ func GetCommand() *cobra.Command {
 		Short: "ONOS zero-touch provisioning subsystem commands",
 	}
 
-	cmd.AddCommand(getConfigCommand())
+	clilib.AddConfigFlags(cmd, defaultAddress)
+	cmd.AddCommand(clilib.GetConfigCommand())
 	cmd.AddCommand(getGetCommand())
 	cmd.AddCommand(getAddCommand())
 	cmd.AddCommand(getUpdateCommand())
