@@ -17,10 +17,10 @@ package southbound
 import (
 	"context"
 	"fmt"
-	"github.com/atomix/go-client/pkg/client/util"
 	ext "github.com/onosproject/onos-config/pkg/northbound/gnmi"
 	"github.com/onosproject/onos-config/pkg/utils"
 	"github.com/onosproject/onos-lib-go/pkg/logging"
+	"github.com/onosproject/onos-lib-go/pkg/southbound"
 	"github.com/onosproject/onos-topo/api/device"
 	"github.com/onosproject/onos-ztp/api/admin"
 	"github.com/openconfig/gnmi/proto/gnmi"
@@ -44,7 +44,7 @@ type GNMIProvisioner struct {
 // Init initializes the gNMI provisioner
 func (p *GNMIProvisioner) Init(opts ...grpc.DialOption) error {
 	optsWithRetry := []grpc.DialOption{
-		grpc.WithStreamInterceptor(util.RetryingStreamClientInterceptor(100 * time.Millisecond)),
+		grpc.WithStreamInterceptor(southbound.RetryingStreamClientInterceptor(100 * time.Millisecond)),
 	}
 	optsWithRetry = append(opts, optsWithRetry...)
 	gnmiConn, err := grpc.Dial(configAddress, optsWithRetry...)
