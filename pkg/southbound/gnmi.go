@@ -17,8 +17,7 @@ package southbound
 import (
 	"context"
 	"fmt"
-	"strconv"
-
+	"github.com/atomix/go-client/pkg/client/util"
 	ext "github.com/onosproject/onos-config/pkg/northbound/gnmi"
 	"github.com/onosproject/onos-config/pkg/utils"
 	"github.com/onosproject/onos-lib-go/pkg/logging"
@@ -27,6 +26,8 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/openconfig/gnmi/proto/gnmi_ext"
 	"google.golang.org/grpc"
+	"strconv"
+	"time"
 )
 
 var log = logging.GetLogger("southbound")
@@ -42,7 +43,11 @@ type GNMIProvisioner struct {
 
 // Init initializes the gNMI provisioner
 func (p *GNMIProvisioner) Init(opts ...grpc.DialOption) error {
-	gnmiConn, err := grpc.Dial(configAddress, opts...)
+	optsWithRetry := []grpc.DialOption{
+		grpc.WithStreamInterceptor(util.RetryingStreamClientInterceptor(100 * time.Millisecond)),
+	}
+	optsWithRetry = append(opts, optsWithRetry...)
+	gnmiConn, err := grpc.Dial(configAddress, optsWithRetry...)
 	if err != nil {
 		log.Error("Unable to connect to onos-config", err)
 		return err
