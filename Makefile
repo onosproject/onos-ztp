@@ -60,13 +60,8 @@ onos-ztp-docker: onos-ztp-base-docker # @HELP build onos-ztp Docker image
 		--build-arg ONOS_ZTP_BASE_VERSION=${ONOS_ZTP_VERSION} \
 		-t onosproject/onos-ztp:${ONOS_ZTP_VERSION}
 
-onos-ztp-debug-docker: onos-ztp-base-docker # @HELP build onos-ztp Docker debug image
-	docker build . -f build/onos-ztp-debug/Dockerfile \
-		--build-arg ONOS_ZTP_BASE_VERSION=${ONOS_ZTP_VERSION} \
-		-t onosproject/onos-ztp:${ONOS_ZTP_DEBUG_VERSION}
-
 images: # @HELP build all Docker images
-images: build onos-ztp-docker onos-ztp-debug-docker
+images: build onos-ztp-docker
 
 kind: # @HELP build Docker images and add them to the currently configured kind cluster
 kind: images
@@ -76,6 +71,8 @@ kind: images
 
 all: build images
 
+publish: # @HELP publish version on github and dockerhub
+	./../build-tools/publish-version ${VERSION} onosproject/onos-ztp
 
 clean: # @HELP remove all the build artifacts
 	rm -rf ./build/_output ./vendor ./cmd/onos-ztp/onos-ztp ./cmd/dummy/dummy
