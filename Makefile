@@ -4,13 +4,11 @@ export GO111MODULE=on
 .PHONY: build
 
 ONOS_ZTP_VERSION := latest
-ONOS_ZTP_DEBUG_VERSION := debug
 ONOS_BUILD_VERSION := stable
 
 build: # @HELP build the Go binaries and run all validations (default)
 build:
 	CGO_ENABLED=1 go build -o build/_output/onos-ztp ./cmd/onos-ztp
-	CGO_ENABLED=1 go build -gcflags "all=-N -l" -o build/_output/onos-ztp-debug ./cmd/onos-ztp
 
 test: # @HELP run the unit tests and source code validation
 test: build deps linters license_check
@@ -66,7 +64,6 @@ images: build onos-ztp-docker
 kind: # @HELP build Docker images and add them to the currently configured kind cluster
 kind: images
 	@if [ "`kind get clusters`" = '' ]; then echo "no kind cluster found" && exit 1; fi
-	kind load docker-image onosproject/onos-ztp:${ONOS_ZTP_DEBUG_VERSION}
 	kind load docker-image onosproject/onos-ztp:${ONOS_ZTP_VERSION}
 
 all: build images
