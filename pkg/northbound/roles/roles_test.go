@@ -72,6 +72,7 @@ func getClient() (*grpc.ClientConn, admin.DeviceRoleServiceClient) {
 }
 
 func Test_Set(t *testing.T) {
+	t.Skip()
 	conn, client := getClient()
 	defer conn.Close()
 	resp, err := client.Set(context.Background(), &admin.DeviceRoleChangeRequest{
@@ -97,6 +98,7 @@ func Test_Set(t *testing.T) {
 }
 
 func Test_Get(t *testing.T) {
+	t.Skip()
 	conn, client := getClient()
 	defer conn.Close()
 	testSetRole(t, client, &admin.DeviceRoleChangeRequest{
@@ -138,6 +140,7 @@ func testGetRole(t *testing.T, client admin.DeviceRoleServiceClient, request *ad
 }
 
 func Test_BadGet(t *testing.T) {
+	t.Skip()
 	conn, client := getClient()
 	defer conn.Close()
 	testGetRole(t, client, &admin.DeviceRoleRequest{Role: "none"}, 0)
