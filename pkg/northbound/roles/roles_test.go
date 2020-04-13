@@ -140,7 +140,7 @@ func testGetRole(t *testing.T, client admin.DeviceRoleServiceClient, request *ad
 }
 
 func Test_BadGet(t *testing.T) {
-	t.Skip()
+	t.Skip("")
 	conn, client := getClient()
 	defer conn.Close()
 	testGetRole(t, client, &admin.DeviceRoleRequest{Role: "none"}, 0)
