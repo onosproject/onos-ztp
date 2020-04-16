@@ -59,7 +59,7 @@ func SetUpServer(port int16, service northbound.Service, waitGroup *sync.WaitGro
 
 	empty := ""
 	Address = fmt.Sprintf(":%d", port)
-	Opts, err = certs.HandleCertArgs(&empty, &empty)
+	Opts, err = certs.HandleCertPaths(empty, empty, empty, true)
 	if err != nil {
 		log.Error("Error loading cert ", err)
 	}
