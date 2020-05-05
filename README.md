@@ -1,5 +1,5 @@
 # onos-ztp
-[![Build Status](https://travis-ci.org/onosproject/onos-ztp.svg?branch=master)](https://travis-ci.org/onosproject/onos-ztp)
+[![Build Status](https://travis-ci.com/onosproject/onos-ztp.svg?branch=master)](https://travis-ci.com/onosproject/onos-ztp)
 [![Go Report Card](https://goreportcard.com/badge/github.com/onosproject/onos-ztp)](https://goreportcard.com/report/github.com/onosproject/onos-ztp)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/gojp/goreportcard/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/github/onosproject/onos-ztp/badge.svg)](https://coveralls.io/github/onosproject/onos-ztp?branch=master)
