@@ -11,6 +11,7 @@ require (
 	github.com/onosproject/onos-topo v0.6.0
 	github.com/openconfig/gnmi v0.0.0-20190823184014-89b2bf29312c
 	github.com/spf13/cobra v0.0.6
+	github.com/stretchr/testify v1.5.1
 	google.golang.org/grpc v1.27.1
 	gotest.tools v2.2.0+incompatible
 )
