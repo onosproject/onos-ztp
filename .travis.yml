@@ -28,7 +28,6 @@ jobs:
     - stage: tests
       script:
         - make coverage
-        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./build/bin/push-images; fi'
     - stage: docs build
       if: type != pull_request
       script:
@@ -37,3 +36,7 @@ jobs:
       if: type != pull_request
       script:
         - sh ../build-tools/build/travis/trigger-travis onosproject onos-cli master "`git rev-parse --short HEAD`" $TRAVIS_ACCESS_TOKEN
+    - stage: release
+      if: type != pull_request && fork == false
+      script:
+        - bash ./build/bin/push-images
