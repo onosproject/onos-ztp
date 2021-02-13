@@ -5,6 +5,8 @@
 [![Coverage Status](https://img.shields.io/coveralls/github/onosproject/onos-ztp/badge.svg)](https://coveralls.io/github/onosproject/onos-ztp?branch=master)
 [![GoDoc](https://godoc.org/github.com/onosproject/onos-ztp?status.svg)](https://godoc.org/github.com/onosproject/onos-ztp)
 
+## This component is no longer under active development and has been archived. Work on this component may resume at a later time
+
 Zero-Touch Provisioning subsystem built using the µONOS architecture.
 
 ## Design Objectives
